@@ -31,8 +31,11 @@ export function LoginView({ branding, onLoginSuccess, onNotify }: LoginViewProps
       } else {
         onLoginSuccess(data.user);
       }
-    } catch {
-      const msg = 'Terjadi gangguan koneksi saat masuk.';
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error && err.message
+          ? err.message
+          : 'Terjadi gangguan koneksi saat masuk.';
       setError(msg);
       onNotify?.('error', 'Login Gagal', msg);
     } finally {

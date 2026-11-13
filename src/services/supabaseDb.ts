@@ -331,14 +331,24 @@ export async function loginWithSupabase(
   identifier: string,
   password: string
 ): Promise<{ success: boolean; user?: UserAccount; message?: string }> {
-  await ensureSupabaseSeed();
-  const sb = getClient();
-  const { data, error } = await sb.from('sadig_users').select('*');
-  if (error) {
-    return { success: false, message: `Gagal terhubung ke Supabase: ${error.message}` };
+  let rows: Array<Record<string, unknown>> | null = null;
+  try {
+    await ensureSupabaseSeed();
+    const sb = getClient();
+    const { data, error } = await sb.from('sadig_users').select('*');
+    if (error) {
+      return { success: false, message: `Gagal terhubung ke Supabase: ${error.message}` };
+    }
+    rows = data as Array<Record<string, unknown>> | null;
+  } catch (err: unknown) {
+    const detail = err instanceof Error ? err.message : String(err);
+    return {
+      success: false,
+      message: `Koneksi Supabase bermasalah: ${detail}`,
+    };
   }
   const normalizedId = identifier.trim().toLowerCase().replace(/\s+/g, '');
-  const matchedRow = (data || []).find((u) => {
+  const matchedRow = (rows || []).find((u) => {
     const uname = String(u.username || '').trim().toLowerCase();
     const nipNorm = String(u.nip || '').replace(/\s+/g, '').toLowerCase();
     const pwd = String(u.password || '');
