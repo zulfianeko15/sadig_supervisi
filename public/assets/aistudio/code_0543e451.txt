@@ -1,0 +1,498 @@
+/**
+ * ============================================================================
+ * SADIG - Supervisi Akademik Digital Guru
+ * File: Kode.gs (Optimized, Ultra-Fast & Super Light)
+ * REVISI LENGKAP SANGAT DETAIL SESUAI INSTRUKSI:
+ * 1. Menu Data Guru 100% Tetap.
+ * 2. Penamaan PDF Nilai Persiapan: [Nama Guru]_nilai persiapan.pdf (Logo terdownload).
+ * 3. Penamaan PDF Nilai Pelaksanaan: [Nama Guru]_nilai pelaksanaan.pdf (Logo terdownload).
+ * 4. Menu Rekapitulasi Hasil 100% Tetap.
+ * 5. Menu User Pengguna: Role admin dikunci, opsi pendaftaran khusus Supervisor.
+ *    Role Admin otomatis sync ke pilihan Supervisor di Data Guru.
+ * 8. Performa ultra-cepat & ringan dengan bundling request.
+ * ============================================================================
+ */
+
+function doGet() {
+  initDatabase();
+  return HtmlService.createTemplateFromFile('Index')
+    .evaluate()
+    .setTitle('SADIG - Supervisi Akademik Digital Guru')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+function include(filename) {
+  return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+/**
+ * INISIALISASI DATABASE SPREADSHEET OTOMATIS
+ */
+function initDatabase() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  // 1. Sheet Users (Username, Password, Role, Nama, NIP)
+  var sheetUsers = getOrCreateSheet(ss, 'Users');
+  if (sheetUsers.getLastRow() === 0) {
+    sheetUsers.appendRow(['Username', 'Password', 'Role', 'Nama', 'NIP']);
+    sheetUsers.appendRow(['admin', 'admin123', 'admin', 'Administrator Utama', '19800101 200501 1 001']);
+  }
+  
+  // 2. Sheet DataGuru
+  var sheetGuru = getOrCreateSheet(ss, 'DataGuru');
+  if (sheetGuru.getLastRow() === 0) {
+    sheetGuru.appendRow(['ID', 'Nama Guru', 'NIP', 'Mata Pelajaran', 'Tanggal Supervisi', 'Supervisor', 'NIP Supervisor']);
+  }
+  
+  // 3. Sheet NilaiPersiapan
+  var sheetPersiapan = getOrCreateSheet(ss, 'NilaiPersiapan');
+  if (sheetPersiapan.getLastRow() === 0) {
+    var headersP = ['ID Guru'];
+    for (var i = 1; i <= 25; i++) headersP.push('P' + i);
+    headersP = headersP.concat(['Total', 'NilaiAkhir', 'Kategori', 'Masalah', 'Pemecahan', 'RencanaTL']);
+    sheetPersiapan.appendRow(headersP);
+  }
+  
+  // 4. Sheet NilaiPelaksanaan
+  var sheetPelaksanaan = getOrCreateSheet(ss, 'NilaiPelaksanaan');
+  if (sheetPelaksanaan.getLastRow() === 0) {
+    var headersL = ['ID Guru'];
+    for (var j = 1; j <= 30; j++) headersL.push('L' + j);
+    headersL = headersL.concat(['Total', 'NilaiAkhir', 'Kategori', 'Masalah', 'Pemecahan', 'RencanaTL']);
+    sheetPelaksanaan.appendRow(headersL);
+  }
+  
+  // 5. Sheet Settings
+  var sheetSettings = getOrCreateSheet(ss, 'Settings');
+  if (sheetSettings.getLastRow() === 0) {
+    sheetSettings.appendRow(['Key', 'Value']);
+    sheetSettings.appendRow(['Nama Sekolah', 'SMP NEGERI 1 WANASABA']);
+    sheetSettings.appendRow(['Tahun Pelajaran', '2026/2027']);
+    sheetSettings.appendRow(['Kepala Sekolah', 'EMILIA PURNAWADI, S.E']);
+    sheetSettings.appendRow(['NIP Kepala Sekolah', '19800101 200501 1 001']);
+    sheetSettings.appendRow(['Pengawas Pembina', 'ZULKIPLI, M.Pd']);
+    sheetSettings.appendRow(['NIP Pengawas Pembina', '19731231 200112 1 022']);
+    sheetSettings.appendRow(['Tempat Tanggal', 'Selong, 12 Agustus 2026']);
+  }
+  
+  // 6. Sheet Supervisors
+  var sheetSpv = getOrCreateSheet(ss, 'Supervisors');
+  if (sheetSpv.getLastRow() === 0) {
+    sheetSpv.appendRow(['ID Guru', 'Nama Supervisor', 'NIP Supervisor']);
+  }
+  
+  syncSupervisorsSheet();
+  return 'Database Siap';
+}
+
+function getOrCreateSheet(ss, sheetName) {
+  var sheet = ss.getSheetByName(sheetName);
+  if (!sheet) sheet = ss.insertSheet(sheetName);
+  return sheet;
+}
+
+// OTENTIKASI USER
+function checkLogin(username, password) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Users');
+  if (!sheet) return { success: false, message: 'Database Users tidak ditemukan.' };
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][0]).trim() == String(username).trim() && String(data[i][1]).trim() == String(password).trim()) {
+      return { 
+        success: true, 
+        user: { 
+          username: data[i][0], 
+          role: data[i][2], 
+          nama: data[i][3],
+          nip: data[i][4] || ''
+        } 
+      };
+    }
+  }
+  return { success: false, message: 'Username atau password salah!' };
+}
+
+// KELOLA USER AKUN & SUPERVISOR (REVISI POIN 5)
+function getUsersList() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Users');
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  var result = [];
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0]) {
+      result.push({
+        username: data[i][0],
+        password: data[i][1],
+        role: data[i][2],
+        nama: data[i][3],
+        nip: data[i][4] || ''
+      });
+    }
+  }
+  return result;
+}
+
+function simpanUserAkun(username, password, nama, nip, role, oldUsername) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetUsers = ss.getSheetByName('Users');
+  var data = sheetUsers.getDataRange().getValues();
+  var rowIndex = -1;
+  
+  if (oldUsername) {
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] == oldUsername) {
+        rowIndex = i + 1;
+        break;
+      }
+    }
+  }
+  
+  // REVISI POIN 5: Role Admin bersifat tetap, pendaftaran baru selalu menjadi supervisor
+  var targetRole = (oldUsername === 'admin' || username === 'admin') ? 'admin' : 'supervisor';
+  var rowData = [username, password, targetRole, nama, nip || ''];
+  
+  if (rowIndex > -1) {
+    sheetUsers.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+  } else {
+    sheetUsers.appendRow(rowData);
+  }
+  
+  syncSupervisorsSheet();
+  return { success: true, message: 'Data akun pengguna & supervisor berhasil disimpan!' };
+}
+
+function hapusUserAkun(username) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Users');
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] == username) {
+      if (data[i][0] === 'admin') {
+        return { success: false, message: 'Akun Administrator Utama tidak dapat dihapus!' };
+      }
+      sheet.deleteRow(i + 1);
+      syncSupervisorsSheet();
+      return { success: true, message: 'Akun pengguna berhasil dihapus!' };
+    }
+  }
+  return { success: false, message: 'Akun tidak ditemukan!' };
+}
+
+// REVISI POIN 5: Role Admin juga akan tampil menjadi Supervisor di daftar pilihan Data Guru
+function syncSupervisorsSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetUsers = ss.getSheetByName('Users');
+  var sheetSpv = ss.getSheetByName('Supervisors');
+  if (!sheetUsers || !sheetSpv) return;
+  
+  var usersData = sheetUsers.getDataRange().getValues();
+  var spvRows = [['ID Guru', 'Nama Supervisor', 'NIP Supervisor']];
+  
+  // Menyertakan seluruh user (baik Admin maupun Supervisor) sebagai pilihan Supervisor Data Guru
+  for (var i = 1; i < usersData.length; i++) {
+    if (usersData[i][0]) {
+      spvRows.push(['SPV_' + i, usersData[i][3], usersData[i][4] || '']);
+    }
+  }
+  
+  sheetSpv.clearContents();
+  sheetSpv.getRange(1, 1, spvRows.length, 3).setValues(spvRows);
+}
+
+// BUNDLE SEMUA DATA DALAM 1 CALL (Sangat Ringan & Cepat - Poin 8)
+function getInitialAppData(currentUser) {
+  syncSupervisorsSheet();
+  return {
+    settings: getSettings(),
+    supervisors: getListSupervisor(),
+    guru: getListGuru(currentUser),
+    rekap: getRekapKeseluruhan(currentUser),
+    users: getUsersList()
+  };
+}
+
+// KELOLA DATA GURU (100% TETAP - POIN 1)
+function getListGuru(currentUser) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DataGuru');
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  var result = [];
+  
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0]) {
+      var tgl = data[i][4];
+      if (tgl instanceof Date) tgl = Utilities.formatDate(tgl, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      
+      var spvNama = data[i][5] ? String(data[i][5]).trim() : '';
+      
+      if (currentUser && currentUser.role === 'supervisor') {
+        if (spvNama.toLowerCase() !== String(currentUser.nama).trim().toLowerCase()) {
+          continue;
+        }
+      }
+      
+      result.push({
+        id: data[i][0], nama: data[i][1], nip: data[i][2],
+        mapel: data[i][3], tglSupervisi: tgl, supervisor: data[i][5], nipSupervisor: data[i][6]
+      });
+    }
+  }
+  return result;
+}
+
+function simpanGuru(guruData) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DataGuru');
+  var data = sheet.getDataRange().getValues();
+  var rowIndex = -1;
+  if (guruData.id) {
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] == guruData.id) { rowIndex = i + 1; break; }
+    }
+  }
+  var newId = guruData.id || 'G' + new Date().getTime();
+  var rowData = [newId, guruData.nama, guruData.nip, guruData.mapel, guruData.tglSupervisi, guruData.supervisor, guruData.nipSupervisor];
+  if (rowIndex > -1) sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+  else sheet.appendRow(rowData);
+  return { success: true, message: 'Data guru berhasil disimpan!', id: newId };
+}
+
+function uploadBulkGuru(guruArray) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DataGuru');
+  var timestamp = new Date().getTime();
+  var rowsToAppend = [];
+  
+  for (var i = 0; i < guruArray.length; i++) {
+    var item = guruArray[i];
+    if (item.nama && item.mapel) {
+      var newId = 'G' + (timestamp + i);
+      rowsToAppend.push([
+        newId, item.nama, item.nip || '', item.mapel,
+        item.tglSupervisi || '', item.supervisor || '', item.nipSupervisor || ''
+      ]);
+    }
+  }
+  if (rowsToAppend.length > 0) {
+    sheet.getRange(sheet.getLastRow() + 1, 1, rowsToAppend.length, 7).setValues(rowsToAppend);
+    return { success: true, message: rowsToAppend.length + ' Data guru berhasil diunggah!' };
+  } else {
+    return { success: false, message: 'Format data tidak valid atau kosong.' };
+  }
+}
+
+function hapusGuru(idGuru) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('DataGuru');
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] == idGuru) {
+      sheet.deleteRow(i + 1);
+      hapusNilaiTerkait('NilaiPersiapan', idGuru);
+      hapusNilaiTerkait('NilaiPelaksanaan', idGuru);
+      return { success: true, message: 'Data guru berhasil dihapus!' };
+    }
+  }
+  return { success: false, message: 'Data guru tidak ditemukan!' };
+}
+
+function hapusNilaiTerkait(sheetName, idGuru) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  if (!sheet) return;
+  var data = sheet.getDataRange().getValues();
+  for (var i = data.length - 1; i >= 1; i--) {
+    if (data[i][0] == idGuru) sheet.deleteRow(i + 1);
+  }
+}
+
+function getListSupervisor() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Supervisors');
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  var result = [];
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0]) {
+      result.push({ idGuru: data[i][0], nama: data[i][1], nip: data[i][2] });
+    }
+  }
+  return result;
+}
+
+function hitungKategori(nilai) {
+  var val = parseFloat(nilai);
+  if (isNaN(val)) return '-';
+  if (val >= 81) return 'Sangat Baik (SB)';
+  if (val >= 61) return 'Baik (B)';
+  if (val >= 41) return 'Cukup (C)';
+  if (val >= 21) return 'Kurang (K)';
+  return 'Sangat Kurang (SK)';
+}
+
+function simpanNilaiPersiapan(idGuru, scores, masalah, pemecahan, rencanaTL) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('NilaiPersiapan');
+  var data = sheet.getDataRange().getValues();
+  var rowIndex = -1;
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] == idGuru) { rowIndex = i + 1; break; }
+  }
+  
+  var total = 0;
+  for (var k in scores) total += parseInt(scores[k] || 0);
+  
+  var persentase = (total / 125) * 100;
+  var kategori = hitungKategori(persentase);
+  
+  var rowData = [idGuru];
+  for (var j = 1; j <= 25; j++) rowData.push(scores['P' + j] || 0);
+  rowData.push(total, persentase.toFixed(1), kategori, masalah, pemecahan, rencanaTL);
+  
+  if (rowIndex > -1) sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+  else sheet.appendRow(rowData);
+  
+  return { success: true, message: 'Nilai Persiapan Pembelajaran berhasil disimpan!' };
+}
+
+function simpanNilaiPelaksanaan(idGuru, scores, masalah, pemecahan, rencanaTL) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('NilaiPelaksanaan');
+  var data = sheet.getDataRange().getValues();
+  var rowIndex = -1;
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0] == idGuru) { rowIndex = i + 1; break; }
+  }
+  var total = 0;
+  for (var k in scores) total += parseInt(scores[k] || 0);
+  
+  var nilaiAkhir = (total / 150) * 100;
+  var kategori = hitungKategori(nilaiAkhir);
+  
+  var rowData = [idGuru];
+  for (var j = 1; j <= 30; j++) rowData.push(scores['L' + j] || 0);
+  rowData.push(total, nilaiAkhir.toFixed(1), kategori, masalah, pemecahan, rencanaTL);
+  
+  if (rowIndex > -1) sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+  else sheet.appendRow(rowData);
+  
+  return { success: true, message: 'Nilai Pelaksanaan Pembelajaran berhasil disimpan!' };
+}
+
+function getNilaiGuru(idGuru) {
+  var result = { persiapan: null, pelaksanaan: null };
+  var sheetP = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('NilaiPersiapan');
+  if (sheetP) {
+    var dataP = sheetP.getDataRange().getValues();
+    for (var i = 1; i < dataP.length; i++) {
+      if (dataP[i][0] == idGuru) {
+        var scores = {};
+        for (var j = 1; j <= 25; j++) scores['P' + j] = dataP[i][j];
+        result.persiapan = { 
+          scores: scores, 
+          total: dataP[i][26], 
+          persentase: dataP[i][27], 
+          kategori: dataP[i][28], 
+          masalah: dataP[i][29], 
+          pemecahan: dataP[i][30],
+          rencanaTL: dataP[i][31] 
+        };
+        break;
+      }
+    }
+  }
+  var sheetL = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('NilaiPelaksanaan');
+  if (sheetL) {
+    var dataL = sheetL.getDataRange().getValues();
+    for (var k = 1; k < dataL.length; k++) {
+      if (dataL[k][0] == idGuru) {
+        var scoresL = {};
+        for (var m = 1; m <= 30; m++) scoresL['L' + m] = dataL[k][m];
+        result.pelaksanaan = { 
+          scores: scoresL, 
+          total: dataL[k][31], 
+          nilai: dataL[k][32], 
+          kategori: dataL[k][33], 
+          masalah: dataL[k][34], 
+          pemecahan: dataL[k][35], 
+          rencanaTL: dataL[k][36] 
+        };
+        break;
+      }
+    }
+  }
+  return result;
+}
+
+// REKAPITULASI HASIL (100% TETAP - POIN 4)
+function getRekapKeseluruhan(currentUser) {
+  var guruList = getListGuru(currentUser);
+  var sheetP = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('NilaiPersiapan');
+  var sheetL = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('NilaiPelaksanaan');
+  
+  var mapP = {};
+  if (sheetP) {
+    var dataP = sheetP.getDataRange().getValues();
+    for (var i = 1; i < dataP.length; i++) {
+      if (dataP[i][0]) mapP[dataP[i][0]] = {
+        total: parseFloat(dataP[i][26]) || 0,
+        nilai: parseFloat(dataP[i][27]) || 0
+      };
+    }
+  }
+  
+  var mapL = {};
+  if (sheetL) {
+    var dataL = sheetL.getDataRange().getValues();
+    for (var j = 1; j < dataL.length; j++) {
+      if (dataL[j][0]) mapL[dataL[j][0]] = {
+        total: parseFloat(dataL[j][31]) || 0,
+        nilai: parseFloat(dataL[j][32]) || 0
+      };
+    }
+  }
+  
+  var rekap = [];
+  for (var k = 0; k < guruList.length; k++) {
+    var g = guruList[k];
+    var objP = mapP[g.id] || { total: 0, nilai: 0 };
+    var objL = mapL[g.id] || { total: 0, nilai: 0 };
+    
+    var nilP = objP.nilai;
+    var nilL = objL.nilai;
+    var nilRataVal = (nilP > 0 && nilL > 0) ? ((nilP + nilL) / 2) : (nilP || nilL || 0);
+    
+    var kat = 'Belum Lengkap';
+    if (nilRataVal > 0) {
+      kat = hitungKategori(nilRataVal);
+    }
+    
+    rekap.push({
+      id: g.id, nama: g.nama, nip: g.nip, mapel: g.mapel,
+      tgl: g.tglSupervisi, supervisor: g.supervisor, nipSupervisor: g.nipSupervisor,
+      totalP: objP.total,
+      nilaiP: nilP ? nilP.toFixed(1) : '-',
+      totalL: objL.total,
+      nilaiL: nilL ? nilL.toFixed(1) : '-',
+      nilaiRata: nilRataVal > 0 ? nilRataVal.toFixed(1) : '-',
+      kategori: kat
+    });
+  }
+  return rekap;
+}
+
+function getSettings() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Settings');
+  var settings = {};
+  if (sheet) {
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0]) settings[data[i][0]] = data[i][1];
+    }
+  }
+  return settings;
+}
+
+function simpanSettings(settingsData) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Settings');
+  sheet.clearContents();
+  sheet.appendRow(['Key', 'Value']);
+  for (var key in settingsData) {
+    sheet.appendRow([key, settingsData[key]]);
+  }
+  return { success: true, message: 'Pengaturan berhasil diperbarui!' };
+}

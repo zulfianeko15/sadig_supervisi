@@ -1,0 +1,656 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password": "123",
+      "nama": "Rizky Pratama, S.Kom",
+      "role": "Admin",
+      "nip": "19880312 201402 1 002"
+    },
+    {
+      "username": "pengawas",
+      "password": "123",
+      "nama": "Dr. H. Zulkipli, M.Pd",
+      "role": "Pengawas Sekolah",
+      "nip": "19731231 200112 1 022"
+    },
+    {
+      "username": "kepsek",
+      "password": "123",
+      "nama": "Emilia Purnawadi, S.E., M.Pd",
+      "role": "Kepala Sekolah",
+      "nip": "19780514 200312 2 005"
+    },
+    {
+      "username": "supervisor1",
+      "password": "123",
+      "nama": "Dra. Hj. Ratna Dewi, M.Pd",
+      "role": "Pengawas Supervisi",
+      "nip": "19750820 200212 2 003"
+    },
+    {
+      "username": "supervisor2",
+      "password": "123",
+      "nama": "Bambang Sutrisno, S.Pd., M.Si",
+      "role": "Pengawas Supervisi",
+      "nip": "19810410 200604 1 011"
+    },
+    {
+      "username": "guru1",
+      "password": "123",
+      "nama": "Ahmad Hidayat, S.Pd",
+      "role": "Guru",
+      "nip": "19850115 201001 1 004"
+    },
+    {
+      "username": "guru2",
+      "password": "123",
+      "nama": "Siti Aminah, S.Pd., Gr",
+      "role": "Guru",
+      "nip": "19900222 201502 2 003"
+    },
+    {
+      "username": "guru3",
+      "password": "123",
+      "nama": "Dedi Kurniawan, M.Pd",
+      "role": "Guru",
+      "nip": "19871109 201403 1 001"
+    },
+    {
+      "username": "guru4",
+      "password": "123",
+      "nama": "Nurul Hidayah, S.Pd",
+      "role": "Guru",
+      "nip": "19920618 201903 2 007"
+    }
+  ],
+  "guru": [
+    {
+      "id": "G001",
+      "nip": "19850115 201001 1 004",
+      "namaGuru": "Ahmad Hidayat, S.Pd",
+      "mataPelajaran": "Matematika",
+      "tanggalPelaksanaan": "2026-11-10",
+      "supervisor": "Dra. Hj. Ratna Dewi, M.Pd",
+      "nipSupervisor": "19750820 200212 2 003",
+      "statusBerkas": "Disetujui",
+      "kelengkapanBerkas": "Ada",
+      "linkDriveBerkas": "https://drive.google.com/drive/folders/1A2b3C4d5E6fModulMatematika",
+      "catatanKepsek": "Modul Ajar, ATP, LKPD, dan instrumen asesmen lengkap sesuai Kurikulum Merdeka."
+    },
+    {
+      "id": "G002",
+      "nip": "19900222 201502 2 003",
+      "namaGuru": "Siti Aminah, S.Pd., Gr",
+      "mataPelajaran": "Bahasa Indonesia",
+      "tanggalPelaksanaan": "2026-11-12",
+      "supervisor": "Dra. Hj. Ratna Dewi, M.Pd",
+      "nipSupervisor": "19750820 200212 2 003",
+      "statusBerkas": "Disetujui",
+      "kelengkapanBerkas": "Ada",
+      "linkDriveBerkas": "https://drive.google.com/drive/folders/2B3c4D5e6F7gModulBIndo",
+      "catatanKepsek": "Berkas kesiapan disetujui untuk pelaksanaan observasi kelas dan evaluasi."
+    },
+    {
+      "id": "G003",
+      "nip": "19871109 201403 1 001",
+      "namaGuru": "Dedi Kurniawan, M.Pd",
+      "mataPelajaran": "IPA Terpadu",
+      "tanggalPelaksanaan": "2026-11-14",
+      "supervisor": "Dra. Hj. Ratna Dewi, M.Pd",
+      "nipSupervisor": "19750820 200212 2 003",
+      "statusBerkas": "Belum Dicek",
+      "kelengkapanBerkas": "Belum Ada",
+      "linkDriveBerkas": "https://drive.google.com/file/d/3C4d5E6f7G8hPerangkatIPA/view",
+      "catatanKepsek": ""
+    },
+    {
+      "id": "G004",
+      "nip": "19920618 201903 2 007",
+      "namaGuru": "Nurul Hidayah, S.Pd",
+      "mataPelajaran": "Bahasa Inggris",
+      "tanggalPelaksanaan": "2026-11-16",
+      "supervisor": "Bambang Sutrisno, S.Pd., M.Si",
+      "nipSupervisor": "19810410 200604 1 011",
+      "statusBerkas": "Ditolak",
+      "kelengkapanBerkas": "Belum Ada",
+      "linkDriveBerkas": "https://drive.google.com/file/d/4D5e6F7g8H9iDraftInggris/view",
+      "catatanKepsek": "Mohon lengkapi lampiran rubrik asesmen formatif dan LKPD terdiferensiasi pada tautan Drive."
+    }
+  ],
+  "aspekPersiapan": [
+    {
+      "id": "P1",
+      "kelompok": "I. IDENTITAS & CAPAIAN",
+      "aspek": "Identitas Modul Ajar / Perangkat Pembelajaran",
+      "kategoriDeskripsi": "Mencantumkan satuan pendidikan, mata pelajaran, fase/kelas, semester, dan alokasi waktu.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "P2",
+      "kelompok": "I. IDENTITAS & CAPAIAN",
+      "aspek": "Identifikasi Kesiapan Peserta Didik",
+      "kategoriDeskripsi": "Memetakan kesiapan belajar, minat, dan profil belajar murid berbasis asesmen diagnostik.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "P3",
+      "kelompok": "I. IDENTITAS & CAPAIAN",
+      "aspek": "Dimensi Profil Lulusan / Profil Pelajar Pancasila",
+      "kategoriDeskripsi": "Menentukan dimensi karakter yang relevan dan terintegrasi pada tujuan pembelajaran.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "P4",
+      "kelompok": "II. DESAIN PEMBELAJARAN",
+      "aspek": "Perumusan CP, TP, dan Alur Tujuan Pembelajaran (ATP)",
+      "kategoriDeskripsi": "Tujuan pembelajaran terukur, selaras dengan Capaian Pembelajaran fase terkini.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "P5",
+      "kelompok": "II. DESAIN PEMBELAJARAN",
+      "aspek": "Pemilihan Model & Pedagogi Pembelajaran Mendalam",
+      "kategoriDeskripsi": "Merancang pengalaman belajar memahami, mengaplikasikan, dan merefleksikan materi.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "P6",
+      "kelompok": "II. DESAIN PEMBELAJARAN",
+      "aspek": "Langkah Pembelajaran Berdiferensiasi",
+      "kategoriDeskripsi": "Kegiatan pendahuluan, inti, dan penutup mengakomodasi kebutuhan belajar beragam.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "P7",
+      "kelompok": "III. ASESMEN & SUMBER BELAJAR",
+      "aspek": "Rancangan Asesmen Awal, Formatif, dan Sumatif",
+      "kategoriDeskripsi": "Tersedia instrumen dan rubrik penilaian autentik yang terukur dan objektif.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "P8",
+      "kelompok": "III. ASESMEN & SUMBER BELAJAR",
+      "aspek": "Media Digital, LKPD, dan Bahan Ajar Kontekstual",
+      "kategoriDeskripsi": "Melampirkan LKPD, bahan bacaan relevan, dan pemanfaatan media pembelajaran digital.",
+      "tipePenilaian": "skor"
+    }
+  ],
+  "aspekPelaksanaan": [
+    {
+      "id": "L1",
+      "kelompok": "I. KEGIATAN PENDAHULUAN",
+      "aspek": "Pengondisian Kelas & Kesepakatan Belajar",
+      "kategoriDeskripsi": "Menciptakan suasana aman, nyaman, berdoa, dan menegakkan kesepakatan kelas positif.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "L2",
+      "kelompok": "I. KEGIATAN PENDAHULUAN",
+      "aspek": "Apersepsi, Motivasi & Penyampaian Tujuan",
+      "kategoriDeskripsi": "Mengaitkan materi dengan pengalaman nyata murid dan menyampaikan tujuan pembelajaran.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "L3",
+      "kelompok": "II. KEGIATAN INTI (PEMBELAJARAN MENDALAM)",
+      "aspek": "Penguasaan Materi & Pertanyaan Pemantik Kritis",
+      "kategoriDeskripsi": "Menyajikan materi terstruktur dengan pertanyaan pemantik yang merangsang nalar kritis.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "L4",
+      "kelompok": "II. KEGIATAN INTI (PEMBELAJARAN MENDALAM)",
+      "aspek": "Fasilitasi Kolaborasi & Diferensiasi Proses",
+      "kategoriDeskripsi": "Mendampingi kelompok belajar secara adil dan adaptif sesuai kebutuhan murid.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "L5",
+      "kelompok": "II. KEGIATAN INTI (PEMBELAJARAN MENDALAM)",
+      "aspek": "Pemanfaatan Teknologi & Media Interaktif",
+      "kategoriDeskripsi": "Menggunakan perangkat digital/alat peraga secara efektif untuk memperjelas konsep.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "L6",
+      "kelompok": "II. KEGIATAN INTI (PEMBELAJARAN MENDALAM)",
+      "aspek": "Asesmen Formatif & Umpan Balik Konstruktif",
+      "kategoriDeskripsi": "Memantau proses belajar murid dan memberi umpan balik langsung yang membangun.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "L7",
+      "kelompok": "III. KEGIATAN PENUTUP",
+      "aspek": "Penyimpulan Bersama & Refleksi Pembelajaran",
+      "kategoriDeskripsi": "Melibatkan murid menyimpulkan inti materi dan merefleksikan pengalaman belajar.",
+      "tipePenilaian": "skor"
+    },
+    {
+      "id": "L8",
+      "kelompok": "III. KEGIATAN PENUTUP",
+      "aspek": "Asesmen Akhir & Tindak Lanjut Pertemuan",
+      "kategoriDeskripsi": "Melakukan pengecekan ketercapaian tujuan dan menginformasikan rencana pertemuan berikutnya.",
+      "tipePenilaian": "skor"
+    }
+  ],
+  "aspekEvaluasi": [
+    {
+      "id": "E1",
+      "kelompok": "I. ANALISIS HASIL ASESMEN",
+      "aspek": "Rekapitulasi & Analisis Ketuntasan Hasil Belajar",
+      "kategoriDeskripsi": "Dialog refleksi bersama guru mengenai capaian asesmen formatif/sumatif murid.",
+      "tipePenilaian": "teks"
+    },
+    {
+      "id": "E2",
+      "kelompok": "I. ANALISIS HASIL ASESMEN",
+      "aspek": "Identifikasi Butir Soal / Indikator Belum Tuntas",
+      "kategoriDeskripsi": "Dialog mengenai materi esensial yang masih mengalami miskonsepsi atau di bawah KKTP.",
+      "tipePenilaian": "teks"
+    },
+    {
+      "id": "E3",
+      "kelompok": "II. PROGRAM TINDAK LANJUT",
+      "aspek": "Pelaksanaan Program Remedial Terstruktur",
+      "kategoriDeskripsi": "Kesepakatan strategi pendampingan ulang bagi murid yang belum mencapai tujuan.",
+      "tipePenilaian": "teks"
+    },
+    {
+      "id": "E4",
+      "kelompok": "II. PROGRAM TINDAK LANJUT",
+      "aspek": "Pelaksanaan Program Pengayaan & Tantangan Lanjut",
+      "kategoriDeskripsi": "Umpan balik atas tugas pengayaan kontekstual bagi murid yang melampaui capaian.",
+      "tipePenilaian": "teks"
+    },
+    {
+      "id": "E5",
+      "kelompok": "III. REFLEKSI & PELAPORAN",
+      "aspek": "Refleksi Profesional Guru atas Efektivitas Mengajar",
+      "kategoriDeskripsi": "Hasil dialog kekuatan mengajar, kendala kelas, dan perbaikan strategi pedagogis.",
+      "tipePenilaian": "teks"
+    },
+    {
+      "id": "E6",
+      "kelompok": "III. REFLEKSI & PELAPORAN",
+      "aspek": "Dokumentasi Portofolio & Pelaporan Berkala",
+      "kategoriDeskripsi": "Catatan kelengkapan portofolio murid dan penyampaian progres ke orang tua/sekolah.",
+      "tipePenilaian": "teks"
+    }
+  ],
+  "penilaian": [
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P1",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "Identitas modul ajar sangat lengkap.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P2",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "Pemetaan asesmen diagnostik awal tersedia.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P3",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "Dimensi bernalar kritis terintegrasi baik.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P4",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "ATP runtut sesuai fase D.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P5",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "Model problem-based learning tergambar jelas.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P6",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "Diferensiasi konten sudah disiapkan.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P7",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "Rubrik penilaian sangat terukur.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "P8",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "LKPD interaktif GeoGebra terlampir.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L1",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Kelas kondusif dan interaktif.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L2",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Apersepsi kontekstual menarik perhatian siswa.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L3",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Pertanyaan pemantik memicu diskusi aktif.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L4",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Pendampingan kelompok merata.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L5",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Visualisasi grafik digital sangat membantu.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L6",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Umpan balik lisan diberikan tepat waktu.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L7",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Siswa menyimpulkan materi dengan percaya diri.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "L8",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Kuis formatif akhir berjalan tertib.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P1",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "Lengkap.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P2",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "Sudah ada pemetaan gaya belajar.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P3",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "Baik.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P4",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "Tujuan terukur.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P5",
+      "tahap": "Persiapan",
+      "skor": 4,
+      "catatan": "Menggunakan pendekatan teks autentik.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P6",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "Cukup terstruktur.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P7",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "Rubrik teks persuasi tersedia.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "P8",
+      "tahap": "Persiapan",
+      "skor": 3,
+      "catatan": "LKPD cetak dan digital siap.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L1",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Kesepakatan kelas berjalan baik.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L2",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Apersepsi baik.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L3",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Diskusi teks hidup.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L4",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Perlu manajemen waktu kelompok.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L5",
+      "tahap": "Pelaksanaan",
+      "skor": 4,
+      "catatan": "Slide presentasi interaktif.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L6",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Umpan balik cukup jelas.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L7",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Refleksi tertulis dilakukan.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "idAspek": "L8",
+      "tahap": "Pelaksanaan",
+      "skor": 3,
+      "catatan": "Penutup tertib.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "E1",
+      "tahap": "Evaluasi",
+      "skor": null,
+      "teksRefleksi": "Dialog refleksi terverifikasi antara supervisor dan guru untuk E1",
+      "catatan": "Catatan uji",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "E2",
+      "tahap": "Evaluasi",
+      "skor": null,
+      "teksRefleksi": "Dialog refleksi terverifikasi antara supervisor dan guru untuk E2",
+      "catatan": "Catatan uji",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "E3",
+      "tahap": "Evaluasi",
+      "skor": null,
+      "teksRefleksi": "Dialog refleksi terverifikasi antara supervisor dan guru untuk E3",
+      "catatan": "Catatan uji",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "E4",
+      "tahap": "Evaluasi",
+      "skor": null,
+      "teksRefleksi": "Dialog refleksi terverifikasi antara supervisor dan guru untuk E4",
+      "catatan": "Catatan uji",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "E5",
+      "tahap": "Evaluasi",
+      "skor": null,
+      "teksRefleksi": "Dialog refleksi terverifikasi antara supervisor dan guru untuk E5",
+      "catatan": "Catatan uji",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "idAspek": "E6",
+      "tahap": "Evaluasi",
+      "skor": null,
+      "teksRefleksi": "Dialog refleksi terverifikasi antara supervisor dan guru untuk E6",
+      "catatan": "Catatan uji",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd"
+    }
+  ],
+  "catatanTahap": [
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "tahap": "Persiapan",
+      "masalah": "Alokasi waktu untuk diferensiasi produk pada modul ajar masih terlalu padat dalam 2 JP.",
+      "pemecahan": "Memecah aktivitas eksplorasi proyek mini ke dalam LKPD terstruktur berbasis kelompok.",
+      "rencanaTL": "Guru menyempurnakan pembagian alokasi waktu pada pertemuan siklus berikutnya.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd",
+      "updatedAt": "2026-11-10"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "tahap": "Pelaksanaan",
+      "masalah": "Dua siswa di barisan belakang masih pasif saat sesi presentasi kelompok.",
+      "pemecahan": "Menerapkan pembagian peran spesifik (moderator, penyaji, penanya) di tiap kelompok.",
+      "rencanaTL": "Pendampingan variasi teknik bertanya terbuka pada observasi lanjutan.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd",
+      "updatedAt": "2026-11-10"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "tahap": "Persiapan",
+      "masalah": "Rubrik penilaian keterampilan menulis belum mencantumkan indikator kelengkapan argumen.",
+      "pemecahan": "Menambahkan deskriptor skor 1–4 khusus aspek kohesi dan bukti argumen.",
+      "rencanaTL": "Revisi rubrik diunggah ulang ke folder perangkat Drive.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd",
+      "updatedAt": "2026-11-12"
+    },
+    {
+      "nipGuru": "19900222 201502 2 003",
+      "tahap": "Pelaksanaan",
+      "masalah": "Waktu diskusi kelompok melebihi alokasi 10 menit sehingga sesi refleksi terburu-buru.",
+      "pemecahan": "Menggunakan pengatur waktu proyektor agar transisi antar fase lebih disiplin.",
+      "rencanaTL": "Menerapkan timer kelas dan lembar refleksi singkat digital.",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd",
+      "updatedAt": "2026-11-12"
+    },
+    {
+      "nipGuru": "19850115 201001 1 004",
+      "tahap": "Evaluasi",
+      "masalah": "",
+      "pemecahan": "",
+      "rencanaTL": "",
+      "penilai": "Dra. Hj. Ratna Dewi, M.Pd",
+      "updatedAt": "2026-11-13"
+    }
+  ],
+  "pengaturan": {
+    "logoKiri": "",
+    "logoKanan": "",
+    "namaSekolah": "SMP NEGERI 4 KOTA JAMBI",
+    "dinasPendidikan": "DINAS PENDIDIKAN DAN KEBUDAYAAN KOTA JAMBI",
+    "pemerintahDaerah": "PEMERINTAH KOTA JAMBI",
+    "alamatSekolah": "Jalan Kopral Toekini RT.16 No.28 Kel. Lingkar Selatan Kec. Paal Merah",
+    "tahunPelajaran": "2026/2027",
+    "semester": "GANJIL",
+    "namaKepalaSekolah": "Emilia Purnawadi, S.E., M.Pd",
+    "nipKepalaSekolah": "19780514 200312 2 005",
+    "namaPengawasSekolah": "Dr. H. Zulkipli, M.Pd",
+    "nipPengawas": "19731231 200112 1 022",
+    "tanggalPelaksanaanUmum": "2026-11-10",
+    "tempatTanggalCetak": "Kota Jambi, 13 November 2026"
+  }
+}

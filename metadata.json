@@ -1,0 +1,6 @@
+{
+  "name": "SADIG — Supervisi Akademik Digital Guru",
+  "description": "Aplikasi web manajemen supervisi akademik guru berbasis 5 peran pengguna dengan instrumen Kurikulum Merdeka, gerbang persetujuan Kepala Sekolah, lembar SUPAK resmi (Persiapan, Pelaksanaan, Evaluasi), serta paket ekspor Google Apps Script.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

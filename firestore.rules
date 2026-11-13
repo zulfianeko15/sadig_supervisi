@@ -1,0 +1,489 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net: deny all by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // === GLOBAL PRIMITIVES ===
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerified() && request.auth.token.email == 'zulfianputra77@admin.smp.belajar.id';
+    }
+
+    // Only used on single-doc operations (get/create/update/delete), NEVER inside allow list
+    function isAdmin() {
+      return isBootstrappedAdmin() ||
+        (isVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isValidRole(role) {
+      return role in ['Admin', 'Pengawas Sekolah', 'Kepala Sekolah', 'Pengawas Supervisi', 'Guru'];
+    }
+
+    function isValidTahap(tahap) {
+      return tahap in ['Persiapan', 'Pelaksanaan', 'Evaluasi'];
+    }
+
+    function hasRoleAccessByEmails(data) {
+      return data.ownerUid == request.auth.uid ||
+        data.guruEmail == request.auth.token.email ||
+        data.supervisorEmail == request.auth.token.email ||
+        data.kepsekEmail == request.auth.token.email ||
+        data.pengawasEmail == request.auth.token.email;
+    }
+
+    // === VALIDATION BLUEPRINTS ===
+    function isValidAdminMarker(data) {
+      return data.keys().hasAll(['uid', 'email', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'createdAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 200 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'username', 'nama', 'role', 'nip', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'username', 'nama', 'role', 'nip', 'createdAt', 'updatedAt']) &&
+        data.uid is string && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 200 &&
+        data.username is string && data.username.size() >= 2 && data.username.size() <= 64 &&
+        data.nama is string && data.nama.size() >= 2 && data.nama.size() <= 150 &&
+        data.role is string && isValidRole(data.role) &&
+        data.nip is string && data.nip.size() <= 40 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidDirectoryAccount(data) {
+      return data.keys().hasAll(['id', 'username', 'password', 'email', 'nama', 'role', 'nip', 'ownerUid', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['id', 'username', 'password', 'email', 'nama', 'role', 'nip', 'ownerUid', 'createdAt', 'updatedAt']) &&
+        data.id is string && isValidId(data.id) &&
+        data.username is string && data.username.size() >= 2 && data.username.size() <= 64 &&
+        data.password is string && data.password.size() >= 1 && data.password.size() <= 64 &&
+        data.email is string && data.email.size() <= 200 &&
+        data.nama is string && data.nama.size() >= 2 && data.nama.size() <= 150 &&
+        data.role is string && isValidRole(data.role) &&
+        data.nip is string && data.nip.size() <= 40 &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidGuru(data) {
+      return data.keys().hasAll([
+          'id', 'nip', 'namaGuru', 'mataPelajaran', 'tanggalPelaksanaan', 'supervisor',
+          'nipSupervisor', 'statusBerkas', 'kelengkapanBerkas', 'linkDriveBerkas',
+          'catatanKepsek', 'ownerUid', 'guruEmail', 'supervisorEmail', 'kepsekEmail',
+          'pengawasEmail', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'nip', 'namaGuru', 'mataPelajaran', 'tanggalPelaksanaan', 'supervisor',
+          'nipSupervisor', 'statusBerkas', 'kelengkapanBerkas', 'linkDriveBerkas',
+          'catatanKepsek', 'ownerUid', 'guruEmail', 'supervisorEmail', 'kepsekEmail',
+          'pengawasEmail', 'createdAt', 'updatedAt'
+        ]) &&
+        data.id is string && isValidId(data.id) &&
+        data.nip is string && data.nip.size() >= 3 && data.nip.size() <= 40 &&
+        data.namaGuru is string && data.namaGuru.size() >= 2 && data.namaGuru.size() <= 150 &&
+        data.mataPelajaran is string && data.mataPelajaran.size() >= 2 && data.mataPelajaran.size() <= 100 &&
+        data.tanggalPelaksanaan is string && data.tanggalPelaksanaan.size() <= 20 &&
+        data.supervisor is string && data.supervisor.size() <= 150 &&
+        data.nipSupervisor is string && data.nipSupervisor.size() <= 40 &&
+        data.statusBerkas in ['Belum Dicek', 'Disetujui', 'Ditolak'] &&
+        data.kelengkapanBerkas in ['Ada', 'Belum Ada'] &&
+        data.linkDriveBerkas is string && data.linkDriveBerkas.size() <= 500 &&
+        (data.linkDriveBerkas == '' || data.linkDriveBerkas.matches('^https?://.*')) &&
+        data.catatanKepsek is string && data.catatanKepsek.size() <= 1000 &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.guruEmail is string && data.guruEmail.size() <= 200 &&
+        data.supervisorEmail is string && data.supervisorEmail.size() <= 200 &&
+        data.kepsekEmail is string && data.kepsekEmail.size() <= 200 &&
+        data.pengawasEmail is string && data.pengawasEmail.size() <= 200 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidAspek(data) {
+      return data.keys().hasAll([
+          'id', 'tahap', 'kelompok', 'aspek', 'kategoriDeskripsi', 'tipePenilaian',
+          'orderIndex', 'publicCatalog', 'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'tahap', 'kelompok', 'aspek', 'kategoriDeskripsi', 'tipePenilaian',
+          'orderIndex', 'publicCatalog', 'ownerUid', 'createdAt', 'updatedAt'
+        ]) &&
+        data.id is string && isValidId(data.id) &&
+        isValidTahap(data.tahap) &&
+        data.kelompok is string && data.kelompok.size() >= 1 && data.kelompok.size() <= 150 &&
+        data.aspek is string && data.aspek.size() >= 2 && data.aspek.size() <= 300 &&
+        data.kategoriDeskripsi is string && data.kategoriDeskripsi.size() <= 1000 &&
+        data.tipePenilaian in ['skor', 'teks'] &&
+        data.orderIndex is number && data.orderIndex >= 0 && data.orderIndex <= 10000 &&
+        data.publicCatalog is bool &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidPenilaian(data) {
+      return data.keys().hasAll([
+          'id', 'guruId', 'nipGuru', 'idAspek', 'tahap', 'skor', 'teksRefleksi',
+          'catatan', 'penilai', 'ownerUid', 'guruEmail', 'supervisorEmail',
+          'kepsekEmail', 'pengawasEmail', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'guruId', 'nipGuru', 'idAspek', 'tahap', 'skor', 'teksRefleksi',
+          'catatan', 'penilai', 'ownerUid', 'guruEmail', 'supervisorEmail',
+          'kepsekEmail', 'pengawasEmail', 'createdAt', 'updatedAt'
+        ]) &&
+        data.id is string && isValidId(data.id) &&
+        data.guruId is string && isValidId(data.guruId) &&
+        data.nipGuru is string && data.nipGuru.size() >= 3 && data.nipGuru.size() <= 40 &&
+        data.idAspek is string && isValidId(data.idAspek) &&
+        isValidTahap(data.tahap) &&
+        (data.skor == null || (data.skor is int && data.skor >= 1 && data.skor <= 4)) &&
+        data.teksRefleksi is string && data.teksRefleksi.size() <= 3000 &&
+        data.catatan is string && data.catatan.size() <= 1000 &&
+        data.penilai is string && data.penilai.size() >= 1 && data.penilai.size() <= 150 &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.guruEmail is string && data.guruEmail.size() <= 200 &&
+        data.supervisorEmail is string && data.supervisorEmail.size() <= 200 &&
+        data.kepsekEmail is string && data.kepsekEmail.size() <= 200 &&
+        data.pengawasEmail is string && data.pengawasEmail.size() <= 200 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCatatanTahap(data) {
+      return data.keys().hasAll([
+          'id', 'guruId', 'nipGuru', 'tahap', 'masalah', 'pemecahan', 'rencanaTL',
+          'penilai', 'updatedAtDate', 'ownerUid', 'guruEmail', 'supervisorEmail',
+          'kepsekEmail', 'pengawasEmail', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'guruId', 'nipGuru', 'tahap', 'masalah', 'pemecahan', 'rencanaTL',
+          'penilai', 'updatedAtDate', 'ownerUid', 'guruEmail', 'supervisorEmail',
+          'kepsekEmail', 'pengawasEmail', 'createdAt', 'updatedAt'
+        ]) &&
+        data.id is string && isValidId(data.id) &&
+        data.guruId is string && isValidId(data.guruId) &&
+        data.nipGuru is string && data.nipGuru.size() >= 3 && data.nipGuru.size() <= 40 &&
+        isValidTahap(data.tahap) &&
+        data.masalah is string && data.masalah.size() <= 2000 &&
+        data.pemecahan is string && data.pemecahan.size() <= 2000 &&
+        data.rencanaTL is string && data.rencanaTL.size() <= 2000 &&
+        data.penilai is string && data.penilai.size() <= 150 &&
+        data.updatedAtDate is string && data.updatedAtDate.size() <= 20 &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.guruEmail is string && data.guruEmail.size() <= 200 &&
+        data.supervisorEmail is string && data.supervisorEmail.size() <= 200 &&
+        data.kepsekEmail is string && data.kepsekEmail.size() <= 200 &&
+        data.pengawasEmail is string && data.pengawasEmail.size() <= 200 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidPengaturan(data) {
+      return data.keys().hasAll([
+          'namaSekolah', 'dinasPendidikan', 'pemerintahDaerah', 'alamatSekolah',
+          'tahunPelajaran', 'semester', 'namaKepalaSekolah', 'nipKepalaSekolah',
+          'namaPengawasSekolah', 'nipPengawas', 'tanggalPelaksanaanUmum',
+          'tempatTanggalCetak', 'logoKiri', 'logoKanan', 'ownerUid', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'namaSekolah', 'dinasPendidikan', 'pemerintahDaerah', 'alamatSekolah',
+          'tahunPelajaran', 'semester', 'namaKepalaSekolah', 'nipKepalaSekolah',
+          'namaPengawasSekolah', 'nipPengawas', 'tanggalPelaksanaanUmum',
+          'tempatTanggalCetak', 'logoKiri', 'logoKanan', 'ownerUid', 'updatedAt'
+        ]) &&
+        data.namaSekolah is string && data.namaSekolah.size() >= 2 && data.namaSekolah.size() <= 200 &&
+        data.dinasPendidikan is string && data.dinasPendidikan.size() >= 2 && data.dinasPendidikan.size() <= 200 &&
+        data.pemerintahDaerah is string && data.pemerintahDaerah.size() >= 2 && data.pemerintahDaerah.size() <= 200 &&
+        data.alamatSekolah is string && data.alamatSekolah.size() >= 2 && data.alamatSekolah.size() <= 300 &&
+        data.tahunPelajaran is string && data.tahunPelajaran.size() >= 4 && data.tahunPelajaran.size() <= 30 &&
+        data.semester is string && data.semester.size() >= 1 && data.semester.size() <= 30 &&
+        data.namaKepalaSekolah is string && data.namaKepalaSekolah.size() >= 2 && data.namaKepalaSekolah.size() <= 150 &&
+        data.nipKepalaSekolah is string && data.nipKepalaSekolah.size() <= 40 &&
+        data.namaPengawasSekolah is string && data.namaPengawasSekolah.size() >= 2 && data.namaPengawasSekolah.size() <= 150 &&
+        data.nipPengawas is string && data.nipPengawas.size() <= 40 &&
+        data.tanggalPelaksanaanUmum is string && data.tanggalPelaksanaanUmum.size() <= 20 &&
+        data.tempatTanggalCetak is string && data.tempatTanggalCetak.size() <= 120 &&
+        data.logoKiri is string && data.logoKiri.size() <= 350000 &&
+        data.logoKanan is string && data.logoKanan.size() <= 350000 &&
+        data.ownerUid is string && data.ownerUid.size() >= 1 && data.ownerUid.size() <= 128 &&
+        data.updatedAt is timestamp;
+    }
+
+    // === COLLECTION RULES ===
+
+    match /test/connection {
+      allow get: if isSignedIn();
+    }
+
+    match /admins/{uid} {
+      allow get: if isVerified() && isValidId(uid) && (request.auth.uid == uid || isBootstrappedAdmin());
+      allow create: if isBootstrappedAdmin() && isValidId(uid) && isValidAdminMarker(incoming()) &&
+        incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isBootstrappedAdmin() && isValidId(uid);
+    }
+
+    match /users/{userId} {
+      allow get: if isVerified() && isValidId(userId) && (request.auth.uid == userId || isAdmin());
+      allow list: if isVerified() && (isBootstrappedAdmin() || resource.data.uid == request.auth.uid);
+      allow create: if isVerified() && isValidId(userId) && isValidUser(incoming()) &&
+        incoming().uid == userId &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (
+          isAdmin() ||
+          (request.auth.uid == userId && incoming().role == 'Guru')
+        );
+      allow update: if isVerified() && isValidId(userId) && isValidUser(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().email == existing().email &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            isAdmin() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['username', 'nama', 'role', 'nip', 'updatedAt'])
+          ) ||
+          (
+            request.auth.uid == userId &&
+            incoming().role == existing().role &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['nama', 'nip', 'updatedAt'])
+          )
+        );
+      allow delete: if isVerified() && isValidId(userId) && isAdmin();
+    }
+
+    match /directoryUsers/{accountId} {
+      allow get: if isVerified() && isValidId(accountId) && isAdmin();
+      allow list: if isVerified() && isBootstrappedAdmin();
+      allow create: if isVerified() && isValidId(accountId) && isAdmin() &&
+        isValidDirectoryAccount(incoming()) &&
+        incoming().id == accountId &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerified() && isValidId(accountId) && isAdmin() &&
+        isValidDirectoryAccount(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['username', 'password', 'email', 'nama', 'role', 'nip', 'updatedAt']);
+      allow delete: if isVerified() && isValidId(accountId) && isAdmin();
+    }
+
+    match /pengaturan/{settingId} {
+      allow get: if isVerified() && isValidId(settingId);
+      allow list: if false;
+      allow create: if isVerified() && isValidId(settingId) && settingId == 'sekolah' &&
+        isAdmin() && isValidPengaturan(incoming()) &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerified() && isValidId(settingId) && settingId == 'sekolah' &&
+        isAdmin() && isValidPengaturan(incoming()) &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'namaSekolah', 'dinasPendidikan', 'pemerintahDaerah', 'alamatSekolah',
+          'tahunPelajaran', 'semester', 'namaKepalaSekolah', 'nipKepalaSekolah',
+          'namaPengawasSekolah', 'nipPengawas', 'tanggalPelaksanaanUmum',
+          'tempatTanggalCetak', 'logoKiri', 'logoKanan', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+
+    match /aspek/{aspekId} {
+      allow get: if isVerified() && isValidId(aspekId);
+      allow list: if isVerified() && (isBootstrappedAdmin() || resource.data.publicCatalog == true);
+      allow create: if isVerified() && isValidId(aspekId) && isAdmin() &&
+        isValidAspek(incoming()) &&
+        incoming().id == aspekId &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerified() && isValidId(aspekId) && isAdmin() &&
+        isValidAspek(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().tahap == existing().tahap &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['kelompok', 'aspek', 'kategoriDeskripsi', 'tipePenilaian', 'orderIndex', 'updatedAt']);
+      allow delete: if isVerified() && isValidId(aspekId) && isAdmin();
+    }
+
+    match /guru/{guruId} {
+      allow get: if isVerified() && isValidId(guruId) && (
+        isAdmin() ||
+        hasRoleAccessByEmails(resource.data)
+      );
+      allow list: if isVerified() && (
+        isBootstrappedAdmin() ||
+        hasRoleAccessByEmails(resource.data)
+      );
+      allow create: if isVerified() && isValidId(guruId) && isAdmin() &&
+        isValidGuru(incoming()) &&
+        incoming().id == guruId &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerified() && isValidId(guruId) &&
+        isValidGuru(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            isAdmin() &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'nip', 'namaGuru', 'mataPelajaran', 'tanggalPelaksanaan', 'supervisor',
+              'nipSupervisor', 'statusBerkas', 'kelengkapanBerkas', 'linkDriveBerkas',
+              'catatanKepsek', 'guruEmail', 'supervisorEmail', 'kepsekEmail',
+              'pengawasEmail', 'updatedAt'
+            ])
+          ) ||
+          (
+            // Action: Guru uploads Google Drive link (cannot self-approve)
+            existing().guruEmail == request.auth.token.email &&
+            incoming().statusBerkas == 'Belum Dicek' &&
+            incoming().kelengkapanBerkas == 'Belum Ada' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['linkDriveBerkas', 'statusBerkas', 'kelengkapanBerkas', 'updatedAt'])
+          ) ||
+          (
+            // Action: Kepala Sekolah verifies Drive link
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Kepala Sekolah' &&
+            (incoming().statusBerkas != 'Disetujui' || incoming().kelengkapanBerkas == 'Ada') &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['statusBerkas', 'kelengkapanBerkas', 'catatanKepsek', 'updatedAt'])
+          )
+        );
+      allow delete: if isVerified() && isValidId(guruId) && isAdmin();
+    }
+
+    match /penilaian/{penilaianId} {
+      allow get: if isVerified() && isValidId(penilaianId) && (
+        isAdmin() ||
+        hasRoleAccessByEmails(resource.data)
+      );
+      allow list: if isVerified() && (
+        isBootstrappedAdmin() ||
+        hasRoleAccessByEmails(resource.data)
+      );
+      allow create: if isVerified() && isValidId(penilaianId) &&
+        isValidPenilaian(incoming()) &&
+        incoming().id == penilaianId &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/guru/$(incoming().guruId)) &&
+        get(/databases/$(database)/documents/guru/$(incoming().guruId)).data.statusBerkas == 'Disetujui' &&
+        (
+          (isAdmin() && incoming().ownerUid == request.auth.uid) ||
+          (
+            incoming().ownerUid == request.auth.uid &&
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Pengawas Supervisi'
+          )
+        );
+      allow update: if isVerified() && isValidId(penilaianId) &&
+        isValidPenilaian(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().guruId == existing().guruId &&
+        incoming().idAspek == existing().idAspek &&
+        incoming().tahap == existing().tahap &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/guru/$(incoming().guruId)) &&
+        get(/databases/$(database)/documents/guru/$(incoming().guruId)).data.statusBerkas == 'Disetujui' &&
+        (
+          (
+            isAdmin() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['skor', 'teksRefleksi', 'catatan', 'penilai', 'updatedAt'])
+          ) ||
+          (
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Pengawas Supervisi' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['skor', 'teksRefleksi', 'catatan', 'penilai', 'updatedAt'])
+          )
+        );
+      allow delete: if isVerified() && isValidId(penilaianId) && isAdmin();
+    }
+
+    match /catatanTahap/{catatanId} {
+      allow get: if isVerified() && isValidId(catatanId) && (
+        isAdmin() ||
+        hasRoleAccessByEmails(resource.data)
+      );
+      allow list: if isVerified() && (
+        isBootstrappedAdmin() ||
+        hasRoleAccessByEmails(resource.data)
+      );
+      allow create: if isVerified() && isValidId(catatanId) &&
+        isValidCatatanTahap(incoming()) &&
+        incoming().id == catatanId &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/guru/$(incoming().guruId)) &&
+        get(/databases/$(database)/documents/guru/$(incoming().guruId)).data.statusBerkas == 'Disetujui' &&
+        (
+          (isAdmin() && incoming().ownerUid == request.auth.uid) ||
+          (
+            incoming().ownerUid == request.auth.uid &&
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Pengawas Supervisi'
+          )
+        );
+      allow update: if isVerified() && isValidId(catatanId) &&
+        isValidCatatanTahap(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().guruId == existing().guruId &&
+        incoming().tahap == existing().tahap &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        exists(/databases/$(database)/documents/guru/$(incoming().guruId)) &&
+        get(/databases/$(database)/documents/guru/$(incoming().guruId)).data.statusBerkas == 'Disetujui' &&
+        (
+          (
+            isAdmin() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['masalah', 'pemecahan', 'rencanaTL', 'penilai', 'updatedAtDate', 'updatedAt'])
+          ) ||
+          (
+            exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Pengawas Supervisi' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['masalah', 'pemecahan', 'rencanaTL', 'penilai', 'updatedAtDate', 'updatedAt'])
+          )
+        );
+      allow delete: if isVerified() && isValidId(catatanId) && isAdmin();
+    }
+  }
+}

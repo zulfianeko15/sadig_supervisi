@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SADIG - Supervisi Akademik Digital Guru </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --bg-login: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+      --primary-blue: #0284c7;
+      --dark-blue: #0369a1;
+      --navy-header: #1e3a8a;
+      --sidebar-bg: #0f172a;
+    }
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+      background-color: #f8fafc;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .app-header-container {
+      position: sticky;
+      top: 0;
+      z-index: 1010;
+      background-color: #f8fafc;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .app-header-banner {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .app-header-banner h2 { 
+      font-weight: 700; 
+      letter-spacing: 0.3px; 
+      margin: 0; 
+      font-size: 1.05rem; 
+      text-transform: uppercase; 
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .app-header-banner p { 
+      margin: 2px 0 0 0; 
+      opacity: 0.9; 
+      font-size: 0.75rem; 
+      font-weight: 400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .login-wrapper {
+      min-height: 100vh;
+      background: var(--bg-login);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      overflow: hidden;
+      text-align: center;
+    }
+    .login-header {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: white;
+      padding: 28px 20px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .logo-tutwuri {
+      width: 85px;
+      height: 85px;
+      max-width: 85px;
+      max-height: 85px;
+      object-fit: contain;
+      margin-bottom: 12px;
+      filter: drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.2));
+      display: block;
+    }
+    .btn-login {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      border-radius: 10px;
+    }
+    .main-content { 
+      margin-left: 250px; 
+      padding: 10px 25px 20px 25px; 
+      width: calc(100% - 250px);
+      transition: all 0.2s ease;
+    }
+    .sidebar { 
+      position: fixed; 
+      top: 0; bottom: 0; left: 0; 
+      z-index: 100;
+      padding: 15px 10px; 
+      overflow-y: auto; 
+      background-color: var(--sidebar-bg); 
+      color: white; 
+      width: 250px;
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between;
+    }
+    .sidebar-brand { font-size: 1.2rem; font-weight: bold; text-align: center; color: #38bdf8; margin-bottom: 5px; }
+    .sidebar .nav-link { color: #94a3b8; padding: 9px 14px; margin: 3px 0; border-radius: 8px; font-weight: 500; font-size: 0.85rem; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { background-color: #1e293b; color: #38bdf8; }
+    .sidebar-footer { padding-top: 15px; border-top: 1px solid #334155; text-align: center; font-size: 0.75rem; color: #94a3b8; }
+    
+    .mobile-bottom-nav {
+      display: none; 
+      position: fixed; 
+      bottom: 0; left: 0; right: 0; 
+      height: 62px;
+      background-color: #ffffff; 
+      box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.12); 
+      z-index: 1030;
+      border-top: 1px solid #e2e8f0; 
+      justify-content: space-around; 
+      align-items: center; 
+      padding: 0 4px;
+    }
+    .mobile-nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      color: #64748b; 
+      text-decoration: none; 
+      font-size: 0.62rem; 
+      font-weight: 600; 
+      flex: 1; 
+      height: 100%;
+      transition: color 0.2s ease;
+    }
+    .mobile-nav-item i { font-size: 1.15rem; margin-bottom: 2px; }
+    .mobile-nav-item.active { color: var(--primary-blue); font-weight: 700; }
+    .mobile-top-header { display: none; background-color: #0f172a; color: white; padding: 10px 15px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1020; }
+    
+    @media (max-width: 767.98px) {
+      .sidebar { display: none !important; }
+      .mobile-bottom-nav { display: flex !important; }
+      .mobile-top-header { display: flex !important; }
+      .main-content { margin-left: 0 !important; width: 100% !important; padding: 8px 10px 75px 10px !important; }
+      .app-header-container { display: block !important; padding: 4px 0; }
+      .app-header-banner { padding: 8px 12px; }
+      .app-header-banner h2 { font-size: 0.8rem !important; }
+      .app-header-banner p { font-size: 0.65rem !important; }
+    }
+    .card-dashboard { border-radius: 12px; border: none; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
+    .col-compact { width: 1%; white-space: nowrap; }
+    .col-fit { white-space: nowrap; }
+    .col-wide { width: auto; }
+    th { vertical-align: middle !important; }
+    #globalLoader { position: fixed; top: 15px; right: 20px; z-index: 9999; display: none; }
+    
+    .print-area table {
+      width: 100% !important;
+      table-layout: auto !important;
+    }
+    /* REVISI POIN 2 & 3: KOP DENGAN 2 LOGO LENGKAP (KIRI & KANAN) UNTUK PDF HASIL UNDUHAN */
+    .supak-header-box { border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 12px; }
+    .supak-header-grid { display: grid; grid-template-columns: 85px 1fr 85px; align-items: center; text-align: center; gap: 10px; }
+    .supak-logo-img { 
+      width: 80px; 
+      height: 80px; 
+      max-width: 80px; 
+      max-height: 80px; 
+      object-fit: contain;
+      margin: 0 auto; 
+      display: block; 
+    }
+    .supak-header-title { font-weight: 800; font-size: 1rem; text-transform: uppercase; margin: 0; line-height: 1.25; letter-spacing: 0.5px; color: #000; }
+    .supak-header-sub { font-size: 0.78rem; margin: 2px 0; font-weight: 600; color: #000; }
+    .supak-divider-line { border-top: 3px solid #000; margin-top: 6px; margin-bottom: 12px; }
+    .supak-banner-box { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); color: #ffffff; border-radius: 12px; padding: 10px 15px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 15px; border: 1px solid #1e293b; }
+    .supak-banner-title { font-weight: 800; font-size: 0.95rem; letter-spacing: 0.5px; margin: 0; text-transform: uppercase; color: #ffffff; }
+    .supak-banner-subtitle { font-weight: 700; font-size: 0.85rem; margin: 2px 0 0 0; color: #38bdf8; text-transform: uppercase; }
+    
+    .supak-meta-table { width: 100%; margin-bottom: 10px; font-size: 0.8rem; color: #000; border-collapse: collapse; }
+    .supak-meta-table td { padding: 3px 4px; vertical-align: top; }
+    .text-nowrap-custom { white-space: nowrap !important; font-weight: 600; }
+    
+    .table-print-black, .table-print-black th, .table-print-black td { border: 1px solid #000 !important; color: #000 !important; font-size: 0.8rem; padding: 4px 6px; }
+    .box-rekap-supak { border: 1.5px solid #000; padding: 8px 12px; margin-top: 10px; margin-bottom: 12px; background-color: #ffffff; color: #000; }
+    .box-predikat-supak { border: 1.5px solid #000; padding: 8px; margin-top: 8px; margin-bottom: 15px; background-color: #f8fafc; font-size: 0.78rem; color: #000; }
+    .ttd-space { height: 50px !important; }
+    .table-rekap-header th {
+      background-color: #1e3a8a !important;
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      border: 1px solid #0f172a !important;
+      vertical-align: middle !important;
+      text-align: center !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Global Loader -->
+  <div id="globalLoader">
+    <div class="spinner-border text-primary spinner-border-sm" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  
+  <!-- LOGIN PAGE -->
+  <div id="pageLogin" class="login-wrapper">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgJQmQ8GIgaKHpbix_CD_zmZXN4cS4m2lKgnBOfuIZ2IPbZmrzwaPM1Y4&s=10" class="logo-tutwuri" alt="Logo Tutwuri Handayani" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgJQmQ8GIgaKHpbix_CD_zmZXN4cS4m2lKgnBOfuIZ2IPbZmrzwaPM1Y4&s=10';">
+        <h3 class="fw-bold mb-1">SADIG</h3>
+        <p class="mb-0 small">Supervisi Akademik Digital Guru</p>
+      </div>
+      <div class="card-body p-4 text-start">
+        <div id="loginAlert" class="alert alert-danger py-2 small d-none"></div>
+        <form id="formLogin" onsubmit="event.preventDefault(); handleLogin();">
+          <div class="mb-3">
+            <label class="form-label small fw-bold text-secondary">USERNAME</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
+              <input type="text" id="loginUsername" class="form-control bg-light border-start-0" placeholder="Masukkan Username" required>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-bold text-secondary">PASSWORD</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+              <input type="password" id="loginPassword" class="form-control bg-light border-start-0" placeholder="Masukkan Password" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-login w-100 shadow-sm"><i class="fas fa-sign-in-alt me-2"></i> MASUK APLIKASI</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- MAIN APPLICATION -->
+  <div id="pageMain" class="d-none">
+    <div class="mobile-top-header no-print">
+      <div class="d-flex align-items-center gap-2">
+        <i class="fas fa-chalkboard-teacher text-info"></i>
+        <span class="fw-bold">SADIG</span>
+      </div>
+      <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+    
+    <div class="container-fluid p-0">
+      <div class="row g-0">
+        <!-- SIDEBAR DESKTOP -->
+        <div class="sidebar no-print">
+          <div>
+            <div class="sidebar-brand"><i class="fas fa-chalkboard-teacher me-1"></i> SADIG</div>
+            <p class="text-center small text-light mb-2 fw-semibold" id="userInfo">Selamat Datang</p>
+            <hr class="border-secondary my-2">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a class="nav-link active nav-dash" href="#" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link nav-guru" href="#" onclick="showSection('guru')"><i class="fas fa-users me-2"></i> Data Guru</a></li>
+              <li class="nav-item"><a class="nav-link text-info nav-cp" href="#" onclick="showSection('cetakPersiapan')"><i class="fas fa-file-invoice me-2"></i> Nilai Persiapan</a></li>
+              <li class="nav-item"><a class="nav-link text-info nav-cl" href="#" onclick="showSection('cetakPelaksanaan')"><i class="fas fa-file-signature me-2"></i> Nilai Pelaksanaan</a></li>
+              <li class="nav-item"><a class="nav-link text-warning fw-semibold nav-rh" href="#" onclick="showSection('rekapHasil')"><i class="fas fa-poll-h me-2"></i> Rekapitulasi Hasil</a></li>
+              <li class="nav-item" id="navUsersItem"><a class="nav-link nav-users text-success fw-bold" href="#" onclick="showSection('users')"><i class="fas fa-user-shield me-2"></i> User Pengguna</a></li>
+              <li class="nav-item" id="navSettingsItem"><a class="nav-link nav-set" href="#" onclick="showSection('settings')"><i class="fas fa-sliders-h me-2"></i> Pengaturan</a></li>
+              <li class="nav-item mt-3"><a class="nav-link text-danger fw-bold" href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-2"></i> Keluar</a></li>
+            </ul>
+          </div>
+          <div class="sidebar-footer">TIM Media SADIG</div>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+          <div class="app-header-container no-print">
+            <div class="app-header-banner">
+              <div style="min-width: 0;">
+                <h2>SADIG - Supervisi Akademik Digital Guru</h2>
+                <p>Sistem Pengawasan, Penilaian, dan Evaluasi Akademik Terintegrasi</p>
+              </div>
+              <i class="fas fa-award fa-2x opacity-75 ms-2 d-none d-sm-block"></i>
+            </div>
+          </div>
+          
+          <!-- DASHBOARD -->
+          <div id="secDashboard" class="app-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="fw-bold m-0 text-dark">Dashboard Supervisi</h4>
+              <button class="btn btn-outline-secondary btn-sm" onclick="forceRefreshData()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <div class="card card-dashboard bg-primary text-white p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div><h6>Total Guru</h6><h3 id="dashTotalGuru" class="fw-bold mb-0">0</h3></div>
+                    <i class="fas fa-chalkboard-teacher fa-2x opacity-50"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-dashboard bg-success text-white p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div><h6>Sudah Disupervisi</h6><h3 id="dashSudah" class="fw-bold mb-0">0</h3></div>
+                    <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card card-dashboard bg-warning text-dark p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div><h6>Belum Lengkap</h6><h3 id="dashBelum" class="fw-bold mb-0">0</h3></div>
+                    <i class="fas fa-clock fa-2x opacity-50"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- DATA GURU (100% TETAP - POIN 1) -->
+          <div id="secGuru" class="app-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="fw-bold m-0 text-dark">Kelola Data Guru</h4>
+              <div>
+                <button class="btn btn-outline-secondary btn-sm me-1" onclick="forceRefreshData()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                <span id="adminGuruControls">
+                  <button class="btn btn-outline-info btn-sm me-1" onclick="downloadCSVTemplate()"><i class="fas fa-download me-1"></i> Template CSV</button>
+                  <button class="btn btn-outline-success btn-sm me-1" onclick="openModalUpload()"><i class="fas fa-file-upload me-1"></i> Upload</button>
+                  <button class="btn btn-primary btn-sm" onclick="openModalGuru()"><i class="fas fa-plus me-1"></i> Tambah</button>
+                </span>
+              </div>
+            </div>
+            <div class="card card-dashboard p-3">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-dark">
+                    <tr>
+                      <th class="col-wide">Nama Guru</th>
+                      <th class="col-fit">NIP</th>
+                      <th class="col-fit">Mata Pelajaran</th>
+                      <th class="col-fit text-nowrap-custom">Tanggal Pelaksanaan</th>
+                      <th class="col-wide">Supervisor</th>
+                      <th class="col-compact text-center">Input Instrumen</th>
+                      <th class="col-compact text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblGuruBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <!-- NILAI PERSIAPAN (REVISI POIN 2: LOGO KABUPATEN & TUTWURI TERDOWNLOAD LENGKAP DALAM PDF) -->
+          <div id="secCetakPersiapan" class="app-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+              <h4 class="fw-bold m-0 text-dark">Nilai Persiapan</h4>
+              <div class="d-flex gap-2">
+                <select id="selGuruPersiapan" class="form-select form-select-sm w-auto" onchange="renderCetakPersiapan()">
+                  <option value="">-- Pilih Guru --</option>
+                </select>
+                <button class="btn btn-danger btn-sm" onclick="downloadPDFPersiapan()"><i class="fas fa-file-pdf me-1"></i> Download PDF</button>
+              </div>
+            </div>
+            
+            <div class="card card-dashboard p-4 bg-white print-area" id="areaPersiapan">
+              <div class="supak-header-box">
+                <div class="supak-header-grid">
+                  <!-- LOGO KIRI (KABUPATEN LOMBOK TIMUR) -->
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/Lambang_Kota_Jambi.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" class="supak-logo-img" alt="Logo Pemkab Lombok Timur" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/5/58/Lambang_Kota_Jambi.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';">
+                  <div>
+                    <h3 class="supak-header-title">PEMERINTAH KOTA JAMBI</h3>
+                    <h4 class="supak-header-title">DINAS PENDIDIKAN DAN KEBUDAYAAN KOTA JAMBI</h4>
+                    <h5 class="supak-header-title">SMP NEGERI 004 KOTA JAMBI</h5>
+                    <p class="supak-header-sub">Jalan Kopral Toekini RT.16 No.28 Kel. Lingkar Selatan Kec. Paal Merah</p>
+                  </div>
+                  <!-- LOGO KANAN (TUTWURI HANDAYANI) -->
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgJQmQ8GIgaKHpbix_CD_zmZXN4cS4m2lKgnBOfuIZ2IPbZmrzwaPM1Y4&s=10" class="supak-logo-img" alt="Logo Tutwuri Handayani" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgJQmQ8GIgaKHpbix_CD_zmZXN4cS4m2lKgnBOfuIZ2IPbZmrzwaPM1Y4&s=10';">
+                </div>
+              </div>
+              <div class="supak-divider-line"></div>
+              <div class="supak-banner-box">
+                <h6 class="supak-banner-title">INSTRUMEN SUPERVISI AKADEMIS (SUPAK)</h6>
+                <h6 class="supak-banner-title">"PENDEKATAN PEMBELAJARAN MENDALAM (PM)"</h6>
+                <h6 class="supak-banner-subtitle">SEMESTER GENAP TAHUN PELAJARAN <span id="cpThn">2026/2027</span></h6>
+                <h6 class="supak-banner-subtitle text-decoration-underline">(PERSIAPAN PEMBELAJARAN)</h6>
+              </div>
+              
+              <table class="supak-meta-table">
+                <tr>
+                  <td width="15%" class="text-nowrap-custom">Nama Sekolah</td>
+                  <td width="35%">: <span id="cpSekolah">-</span></td>
+                  <td width="18%" class="text-nowrap-custom">Mata Pelajaran</td>
+                  <td width="32%">: <span id="cpMapel">-</span></td>
+                </tr>
+                <tr>
+                  <td class="text-nowrap-custom">Nama Guru</td>
+                  <td>: <span id="cpGuru">-</span></td>
+                  <td class="text-nowrap-custom">Tanggal Pelaksanaan</td>
+                  <td>: <span id="cpTgl">-</span></td>
+                </tr>
+              </table>
+              <p class="mb-1 fw-bold small">PETUNJUK: Isilah kolom pada masing-masing sub-elemen dengan salah satu skor yang dianggap paling sesuai (1, 2, 3, 4, atau 5).</p>
+              
+              <table class="table table-bordered table-print-black align-middle m-0" style="width:100%;">
+                <thead class="table-light text-center fw-bold">
+                  <tr>
+                    <th rowspan="2" class="col-compact">NO</th>
+                    <th rowspan="2" class="col-wide">ELEMEN DAN SUB-ELEMEN PERSIAPAN PEMBELAJARAN</th>
+                    <th colspan="5" class="col-fit">SKOR</th>
+                  </tr>
+                  <tr>
+                    <th width="4%">1</th><th width="4%">2</th><th width="4%">3</th><th width="4%">4</th><th width="4%">5</th>
+                  </tr>
+                </thead>
+                <tbody id="tblCetakPersiapanBody"></tbody>
+              </table>
+              
+              <div class="box-rekap-supak">
+                <div class="row text-center fw-bold">
+                  <div class="col-3">Jumlah Skor : <span id="cpJumlahSkor">0</span></div>
+                  <div class="col-3">Total Skor : <span id="cpTotalSkor">0</span></div>
+                  <div class="col-3">Skor Maksimal : 125</div>
+                  <div class="col-3">Nilai : <span id="cpNilaiAkhir">0</span></div>
+                </div>
+              </div>
+              
+              <div class="border border-dark p-2 my-2 bg-light">
+                <p class="mb-1 fw-bold small">CATATAN HASIL SUPERVISI:</p>
+                <p class="mb-0 small"><strong>1. Masalah yang dihadapi:</strong> <span id="cpMasalah">-</span></p>
+                <p class="mb-0 small"><strong>2. Pemecahan masalah:</strong> <span id="cpPemecahan">-</span></p>
+                <p class="mb-0 small"><strong>3. Rencana tindak lanjut:</strong> <span id="cpTindakLanjut">-</span></p>
+              </div>
+              
+              <div class="row text-center mt-3" style="font-size: 0.8rem; color: #000;">
+                <div class="col-6">
+                  <p class="mb-0">&nbsp;</p>
+                  <p class="mb-0">Supervisor</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="cpSpvTTD">-</p>
+                  <p class="small" id="cpNipSpvTTD">NIP. -</p>
+                </div>
+                <div class="col-6">
+                  <p class="mb-0" id="cpTglSuperviseeTTD">Kota Jambi, 12 Agustus 2026</p>
+                  <p class="mb-0">Supervisee (Guru)</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="cpNamaGuruTTD">-</p>
+                  <p class="small" id="cpNipGuruTTD">NIP. -</p>
+                </div>
+                <div class="col-12 mt-2">Mengetahui</div>
+                <div class="col-6">
+                  <p class="mb-0">Pengawas Pembina</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="cpPengawasTTD">-</p>
+                  <p class="small" id="cpNipPengawasTTD">NIP. -</p>
+                </div>
+                <div class="col-6">
+                  <p class="mb-0">Kepala Sekolah</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="cpKepsekTTD">-</p>
+                  <p class="small" id="cpNipKepsekTTD">NIP. -</p>
+                </div>
+              </div>
+              
+              <div class="box-predikat-supak">
+                <p class="fw-bold mb-1">RENTANG SKOR & PREDIKAT SUPAK:</p>
+                <p class="mb-0">81 - 100% = Sangat Baik (SB) | 61 - 80% = Baik (B) | 41 - 60% = Cukup (C) | 21 - 40% = Kurang (K) | 0 - 20% = Sangat Kurang (SK)</p>
+                <p class="fw-bold mt-1 mb-0 text-primary">Kategori Saat Ini: <span id="cpKategoriBottom">-</span></p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- NILAI PELAKSANAAN (REVISI POIN 3: LOGO KABUPATEN & TUTWURI TERDOWNLOAD LENGKAP DALAM PDF) -->
+          <div id="secCetakPelaksanaan" class="app-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+              <h4 class="fw-bold m-0 text-dark">Nilai Pelaksanaan</h4>
+              <div class="d-flex gap-2">
+                <select id="selGuruPelaksanaan" class="form-select form-select-sm w-auto" onchange="renderCetakPelaksanaan()">
+                  <option value="">-- Pilih Guru --</option>
+                </select>
+                <button class="btn btn-danger btn-sm" onclick="downloadPDFPelaksanaan()"><i class="fas fa-file-pdf me-1"></i> Download PDF</button>
+              </div>
+            </div>
+            
+            <div class="card card-dashboard p-4 bg-white print-area" id="areaPelaksanaan">
+              <div class="supak-header-box">
+                <div class="supak-header-grid">
+                  <!-- LOGO KIRI (KABUPATEN LOMBOK TIMUR) -->
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/Lambang_Kota_Jambi.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" class="supak-logo-img" alt="Logo Pemkab Lombok Timur" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/5/58/Lambang_Kota_Jambi.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original';">
+                  <div>
+                    <h3 class="supak-header-title">PEMERINTAH KOTA JAMBI</h3>
+                    <h4 class="supak-header-title">DINAS PENDIDIKAN DAN KEBUDAYAAN KOTA JAMBI</h4>
+                    <h5 class="supak-header-title">SMP NEGERI 004 KOTA JAMBI</h5>
+                    <p class="supak-header-sub">Jalan Kopral Toekini RT.16 No.28 Kel. Lingkar Selatan Kec. Paal Merah</p>
+                  </div>
+                  <!-- LOGO KANAN (TUTWURI HANDAYANI) -->
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgJQmQ8GIgaKHpbix_CD_zmZXN4cS4m2lKgnBOfuIZ2IPbZmrzwaPM1Y4&s=10" class="supak-logo-img" alt="Logo Tutwuri Handayani" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgJQmQ8GIgaKHpbix_CD_zmZXN4cS4m2lKgnBOfuIZ2IPbZmrzwaPM1Y4&s=10';">
+                </div>
+              </div>
+              <div class="supak-divider-line"></div>
+              <div class="supak-banner-box">
+                <h6 class="supak-banner-title">INSTRUMEN SUPERVISI AKADEMIS (SUPAK)</h6>
+                <h6 class="supak-banner-title">"PENDEKATAN PEMBELAJARAN MENDALAM (PM)"</h6>
+                <h6 class="supak-banner-subtitle">SEMESTER GENAP TAHUN PELAJARAN <span id="clThn">2026/2027</span></h6>
+                <h6 class="supak-banner-subtitle text-decoration-underline">(PELAKSANAAN PEMBELAJARAN)</h6>
+              </div>
+              
+              <table class="supak-meta-table">
+                <tr>
+                  <td width="18%" class="text-nowrap-custom">Mata Pelajaran</td>
+                  <td width="32%">: <span id="clMapel">-</span></td>
+                  <td width="18%" class="text-nowrap-custom">Nama Sekolah</td>
+                  <td width="32%">: <span id="clSekolah">-</span></td>
+                </tr>
+                <tr>
+                  <td class="text-nowrap-custom">Tanggal Pelaksanaan</td>
+                  <td>: <span id="clTgl">-</span></td>
+                  <td class="text-nowrap-custom">Nama Guru</td>
+                  <td>: <span id="clGuru">-</span></td>
+                </tr>
+              </table>
+              <p class="mb-1 fw-bold small">PETUNJUK: Isilah kolom pada masing-masing sub-elemen dengan salah satu skor yang dianggap paling sesuai (1, 2, 3, 4, atau 5).</p>
+              
+              <table class="table table-bordered table-print-black align-middle m-0" style="width:100%;">
+                <thead class="table-light text-center fw-bold">
+                  <tr>
+                    <th rowspan="2" class="col-compact">NO</th>
+                    <th rowspan="2" class="col-wide">ELEMEN DAN SUB-ELEMEN PELAKSANAAN PEMBELAJARAN</th>
+                    <th colspan="5" class="col-fit">SKOR</th>
+                  </tr>
+                  <tr>
+                    <th width="4%">1</th><th width="4%">2</th><th width="4%">3</th><th width="4%">4</th><th width="4%">5</th>
+                  </tr>
+                </thead>
+                <tbody id="tblCetakPelaksanaanBody"></tbody>
+              </table>
+              
+              <div class="box-rekap-supak">
+                <div class="row text-center fw-bold">
+                  <div class="col-3">Jumlah Skor : <span id="clJumlahSkor">0</span></div>
+                  <div class="col-3">Total Skor : <span id="clTotalSkor">0</span></div>
+                  <div class="col-3">Skor Maksimal : 150</div>
+                  <div class="col-3">Nilai : <span id="clNilaiAkhir">0</span></div>
+                </div>
+              </div>
+              
+              <div class="border border-dark p-2 my-2 bg-light">
+                <p class="mb-1 fw-bold small">CATATAN HASIL SUPERVISI:</p>
+                <p class="mb-0 small"><strong>1. Masalah yang dihadapi:</strong> <span id="clMasalah">-</span></p>
+                <p class="mb-0 small"><strong>2. Pemecahan masalah:</strong> <span id="clPemecahan">-</span></p>
+                <p class="mb-0 small"><strong>3. Rencana tindak lanjut:</strong> <span id="clRencanaTL">-</span></p>
+              </div>
+              
+              <div class="row text-center mt-3" style="font-size: 0.8rem; color: #000;">
+                <div class="col-6">
+                  <p class="mb-0">&nbsp;</p>
+                  <p class="mb-0">Supervisor</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="clSpvTTD">-</p>
+                  <p class="small" id="clNipSpvTTD">NIP. -</p>
+                </div>
+                <div class="col-6">
+                  <p class="mb-0" id="clTglSuperviseeTTD">Kota Jambi, 12 Agustus 2026</p>
+                  <p class="mb-0">Supervisee (Guru)</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="clNamaGuruTTD">-</p>
+                  <p class="small" id="clNipGuruTTD">NIP. -</p>
+                </div>
+                <div class="col-12 mt-2">Mengetahui</div>
+                <div class="col-6">
+                  <p class="mb-0">Pengawas Pembina</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="clPengawasTTD">-</p>
+                  <p class="small" id="clNipPengawasTTD">NIP. -</p>
+                </div>
+                <div class="col-6">
+                  <p class="mb-0">Kepala Sekolah</p>
+                  <div class="ttd-space"></div>
+                  <p class="fw-bold text-decoration-underline mb-0" id="clKepsekTTD">-</p>
+                  <p class="small" id="clNipKepsekTTD">NIP. -</p>
+                </div>
+              </div>
+              
+              <div class="box-predikat-supak">
+                <p class="fw-bold mb-1">RENTANG SKOR & PREDIKAT SUPAK:</p>
+                <p class="mb-0">81 - 100% = Sangat Baik (SB) | 61 - 80% = Baik (B) | 41 - 60% = Cukup (C) | 21 - 40% = Kurang (K) | 0 - 20% = Sangat Kurang (SK)</p>
+                <p class="fw-bold mt-1 mb-0 text-success">Kategori Saat Ini: <span id="clKategoriBottom">-</span></p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- REKAPITULASI HASIL (100% TETAP - POIN 4) -->
+          <div id="secRekapHasil" class="app-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+              <h4 class="fw-bold m-0 text-dark">Rekapitulasi Hasil Supervisi Akademik</h4>
+              <div>
+                <button class="btn btn-outline-secondary btn-sm me-2" onclick="forceRefreshData()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                <button class="btn btn-danger btn-sm" onclick="downloadPDFRekapHasil()"><i class="fas fa-file-pdf me-1"></i> Download PDF</button>
+              </div>
+            </div>
+            <div class="card card-dashboard p-4 bg-white print-area" id="areaRekapHasil">
+              <div class="text-center mb-4">
+                <h4 class="fw-bold text-uppercase mb-0">REKAPITULASI HASIL SUPERVISI AKADEMIK GURU</h4>
+                <h5 class="fw-bold text-uppercase mb-2 text-primary" id="rhSekolah">-</h5>
+                <p class="mb-0 fw-semibold">Tahun Pelajaran: <span id="rhThn">-</span></p>
+                <hr class="border-2 border-dark">
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered table-print-black align-middle text-center">
+                  <thead class="table-rekap-header">
+                    <tr>
+                      <th rowspan="2" class="col-compact">No</th>
+                      <th rowspan="2" class="col-wide">Nama Guru / NIP</th>
+                      <th rowspan="2" class="col-fit">Mata Pelajaran</th>
+                      <th colspan="2" class="col-compact">Perencanaan</th>
+                      <th colspan="2" class="col-compact">Pelaksanaan</th>
+                      <th rowspan="2" class="col-compact">Nilai Rata-Rata</th>
+                      <th rowspan="2" class="col-fit">Predikat / Kategori</th>
+                    </tr>
+                    <tr>
+                      <th class="col-compact">Skor</th>
+                      <th class="col-compact">Nilai</th>
+                      <th class="col-compact">Skor</th>
+                      <th class="col-compact">Nilai</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblRekapHasilBody"></tbody>
+                </table>
+              </div>
+              
+              <div class="box-predikat-supak text-start mt-3">
+                <p class="fw-bold mb-1"><i class="fas fa-info-circle me-1 text-primary"></i>KETERANGAN RENTANG SKOR & PREDIKAT SUPAK:</p>
+                <p class="mb-0 fw-semibold">
+                  81 - 100% = Sangat Baik (SB) &nbsp;|&nbsp; 
+                  61 - 80% = Baik (B) &nbsp;|&nbsp; 
+                  41 - 60% = Cukup (C) &nbsp;|&nbsp; 
+                  21 - 40% = Kurang (K) &nbsp;|&nbsp; 
+                  0 - 20% = Sangat Kurang (SK)
+                </p>
+              </div>
+              <div class="row mt-4 pt-3 text-center">
+                <div class="col-6">
+                  <p class="mb-1">Mengetahui,</p>
+                  <p class="mb-5">Pengawas Pembina,</p>
+                  <p class="fw-bold text-decoration-underline mb-0" id="rhPengawas">-</p>
+                  <p class="small" id="rhNipPengawas">-</p>
+                </div>
+                <div class="col-6">
+                  <p class="mb-1" id="rhTglTempat">Kota Jambi, 12 Agustus 2026</p>
+                  <p class="mb-5">Kepala Sekolah,</p>
+                  <p class="fw-bold text-decoration-underline mb-0" id="rhKepsek">-</p>
+                  <p class="small" id="rhNipKepsek">-</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- USER PENGGUNA (REVISI POIN 5: ROLE ADMIN DIMATIKAN/KUNCI SAAT TAMBAH USER) -->
+          <div id="secUsers" class="app-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="fw-bold m-0 text-dark">Kelola User Pengguna & Supervisor</h4>
+              <div>
+                <button class="btn btn-outline-secondary btn-sm me-2" onclick="forceRefreshData()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+                <button class="btn btn-primary btn-sm" onclick="openModalUser()"><i class="fas fa-plus me-1"></i> Tambah User / Supervisor</button>
+              </div>
+            </div>
+            <div class="card card-dashboard p-4">
+              <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i> Menu ini digunakan untuk mengelola data akun pengguna dan Supervisor. Role Admin bersifat tetap, dan pilihan pendaftaran user baru hanya terbuka untuk role Supervisor.</p>
+              <div class="table-responsive">
+                <table class="table table-hover table-striped border align-middle mb-0">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>Username</th>
+                      <th>Password</th>
+                      <th>Nama Lengkap Supervisor</th>
+                      <th>NIP Supervisor</th>
+                      <th class="col-fit text-center">Role</th>
+                      <th class="col-compact text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblUsersPenggunaBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+          <!-- PENGATURAN SYSTEM -->
+          <div id="secSettings" class="app-section d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 class="fw-bold m-0 text-dark">Pengaturan System</h4>
+              <button class="btn btn-outline-secondary btn-sm" onclick="forceRefreshData()"><i class="fas fa-sync-alt me-1"></i> Refresh</button>
+            </div>
+            <div class="row g-4">
+              <div class="col-md-8 mx-auto">
+                <div class="card card-dashboard p-4 h-100">
+                  <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-school me-2"></i>Identitas Sekolah & Pengawas</h5>
+                  <form id="formSettings" onsubmit="event.preventDefault(); saveSettings();">
+                    <div class="mb-2">
+                      <label class="form-label fw-semibold">Nama Sekolah</label>
+                      <input type="text" id="setNamaSekolah" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label fw-semibold">Tahun Pelajaran</label>
+                      <input type="text" id="setThnPelajaran" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label fw-semibold">Nama Kepala Sekolah</label>
+                      <input type="text" id="setKepsek" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label fw-semibold">NIP Kepala Sekolah</label>
+                      <input type="text" id="setNipKepsek" class="form-control" required>
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label fw-semibold text-success"><i class="fas fa-user-check me-1"></i>Nama Pengawas Pembina</label>
+                      <input type="text" id="setPengawas" class="form-control" required placeholder="Contoh: ZULKIPLI, M.Pd">
+                    </div>
+                    <div class="mb-2">
+                      <label class="form-label fw-semibold text-success"><i class="fas fa-id-card me-1"></i>NIP Pengawas Pembina</label>
+                      <input type="text" id="setNipPengawas" class="form-control" required placeholder="Contoh: 197312312001121022">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold">Tempat Tanggal Cetak</label>
+                      <input type="text" id="setTempatTgl" class="form-control" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary fw-bold w-100"><i class="fas fa-save me-1"></i> Simpan Pengaturan</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-bottom-nav no-print">
+      <a href="#" class="mobile-nav-item active m-dash" onclick="showSection('dashboard')"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+      <a href="#" class="mobile-nav-item m-guru" onclick="showSection('guru')"><i class="fas fa-users"></i><span>Data Guru</span></a>
+      <a href="#" class="mobile-nav-item m-cp" onclick="showSection('cetakPersiapan')"><i class="fas fa-file-invoice"></i><span>Nilai Persiapan</span></a>
+      <a href="#" class="mobile-nav-item m-cl" onclick="showSection('cetakPelaksanaan')"><i class="fas fa-file-signature"></i><span>Nilai Pelaksanaan</span></a>
+      <a href="#" class="mobile-nav-item m-rh" onclick="showSection('rekapHasil')"><i class="fas fa-poll-h"></i><span>Rekap Hasil</span></a>
+    </nav>
+  </div>
+
+  <!-- MODAL USER (REVISI POIN 5: Pilihan Role Terkunci Khusus Supervisor) -->
+  <div class="modal fade" id="modalUser" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title" id="modalUserTitle">Kelola User Pengguna</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formUser">
+            <input type="hidden" id="userOldUname">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Username</label>
+              <input type="text" id="userInputUname" class="form-control" required placeholder="Masukkan Username">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Password</label>
+              <input type="text" id="userInputPass" class="form-control" required placeholder="Masukkan Password">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Nama Lengkap Supervisor</label>
+              <input type="text" id="userInputNama" class="form-control" required placeholder="Contoh: ZULKIPLI, M.Pd">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">NIP Supervisor</label>
+              <input type="text" id="userInputNip" class="form-control" placeholder="Contoh: 19800101 200501 1 001">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Role Pengguna</label>
+              <!-- REVISI POIN 5: Role Admin dimatikan, hanya bisa memilih Supervisor -->
+              <select id="userInputRole" class="form-select bg-light" disabled>
+                <option value="supervisor" selected>Supervisor</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" onclick="saveUserAkun()">Simpan Akun</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DATA GURU -->
+  <div class="modal fade" id="modalGuru" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title" id="modalGuruTitle">Data Guru</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formGuru">
+            <input type="hidden" id="guruId">
+            <div class="mb-2"><label class="form-label fw-semibold">Nama Guru</label><input type="text" id="guruNama" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold">NIP</label><input type="text" id="guruNip" class="form-control"></div>
+            <div class="mb-2"><label class="form-label fw-semibold">Mata Pelajaran</label><input type="text" id="guruMapel" class="form-control" required></div>
+            <div class="mb-2"><label class="form-label fw-semibold">Tanggal Pelaksanaan</label><input type="date" id="guruTgl" class="form-control" required></div>
+            <div class="mb-2">
+              <label class="form-label fw-semibold">Supervisor</label>
+              <!-- REVISI POIN 5: Menampilkan Seluruh Supervisor + Admin Utama -->
+              <select id="guruSpv" class="form-select" onchange="updateNipSpvAuto()">
+                <option value="">-- Pilih Supervisor --</option>
+              </select>
+            </div>
+            <input type="hidden" id="guruNipSpv">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" onclick="saveGuru()">Simpan Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL UPLOAD CSV -->
+  <div class="modal fade" id="modalUpload" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title"><i class="fas fa-file-excel me-2"></i>Upload Massal Data Guru</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small text-muted">Upload file CSV dengan susunan: <code>Nama, NIP, Mata Pelajaran, Tanggal (YYYY-MM-DD)</code></p>
+          <div class="mb-3"><input type="file" id="csvFileInput" class="form-control" accept=".csv"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-success" onclick="processCSVUpload()">Proses Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INSTRUMEN PERSIAPAN -->
+  <div class="modal fade" id="modalPersiapan" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="fas fa-file-signature me-2"></i>Instrumen SUPAK: Persiapan Pembelajaran (25 Sub-Elemen)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="pGuruId">
+          <p class="fs-6"><strong>Guru:</strong> <span id="pNamaGuru" class="text-primary fw-bold">-</span></p>
+          <form id="formPersiapan">
+            <div class="table-responsive" style="max-height: 380px;">
+              <table class="table table-bordered align-middle">
+                <thead class="table-light"><tr><th class="col-compact">No</th><th class="col-wide">Elemen & Sub-Elemen Persiapan Pembelajaran</th><th class="col-fit">Skor (1-5)</th></tr></thead>
+                <tbody id="bodyPersiapan"></tbody>
+              </table>
+            </div>
+            <div class="mt-3"><label class="form-label fw-semibold">1. Masalah yang dihadapi</label><textarea id="pMasalah" class="form-control" rows="2"></textarea></div>
+            <div class="mt-2"><label class="form-label fw-semibold">2. Pemecahan masalah</label><textarea id="pPemecahan" class="form-control" rows="2"></textarea></div>
+            <div class="mt-2"><label class="form-label fw-semibold">3. Rencana tindak lanjut</label><textarea id="pTindakLanjut" class="form-control" rows="2"></textarea></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-primary" onclick="saveNilaiPersiapan()">Simpan Nilai Persiapan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL INSTRUMEN PELAKSANAAN -->
+  <div class="modal fade" id="modalPelaksanaan" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title"><i class="fas fa-chalkboard-teacher me-2"></i>Instrumen SUPAK: Pelaksanaan Pembelajaran (30 Sub-Elemen)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="lGuruId">
+          <p class="fs-6"><strong>Guru:</strong> <span id="lNamaGuru" class="text-success fw-bold">-</span></p>
+          <form id="formPelaksanaan">
+            <div class="table-responsive" style="max-height: 380px;">
+              <table class="table table-bordered align-middle">
+                <thead class="table-light"><tr><th class="col-compact">No</th><th class="col-wide">Elemen & Sub-Elemen Pelaksanaan Pembelajaran</th><th class="col-fit">Skor (1-5)</th></tr></thead>
+                <tbody id="bodyPelaksanaan"></tbody>
+              </table>
+            </div>
+            <div class="mt-3"><label class="form-label fw-semibold">1. Masalah yang dihadapi</label><textarea id="lMasalah" class="form-control" rows="2"></textarea></div>
+            <div class="mt-2"><label class="form-label fw-semibold">2. Pemecahan masalah</label><textarea id="lPemecahan" class="form-control" rows="2"></textarea></div>
+            <div class="mt-2"><label class="form-label fw-semibold">3. Rencana tindak lanjut</label><textarea id="lRencanaTL" class="form-control" rows="2"></textarea></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-success" onclick="saveNilaiPelaksanaan()">Simpan Nilai Pelaksanaan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <script>
+    let listGuruData = [];
+    let listSpvData = [];
+    let listUsersData = [];
+    let rekapKeseluruhanCache = [];
+    let currentUser = null;
+    let globalSettings = {};
+    let currentSectionName = 'dashboard';
+    const dom = {};
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      dom.globalLoader = document.getElementById('globalLoader');
+      dom.loginUsername = document.getElementById('loginUsername');
+      dom.loginPassword = document.getElementById('loginPassword');
+      dom.loginAlert = document.getElementById('loginAlert');
+      dom.pageLogin = document.getElementById('pageLogin');
+      dom.pageMain = document.getElementById('pageMain');
+      dom.userInfo = document.getElementById('userInfo');
+      dom.navSettingsItem = document.getElementById('navSettingsItem');
+      dom.navUsersItem = document.getElementById('navUsersItem');
+      dom.dashTotalGuru = document.getElementById('dashTotalGuru');
+      dom.dashSudah = document.getElementById('dashSudah');
+      dom.dashBelum = document.getElementById('dashBelum');
+      dom.tblGuruBody = document.getElementById('tblGuruBody');
+      dom.tblRekapHasilBody = document.getElementById('tblRekapHasilBody');
+      dom.tblUsersPenggunaBody = document.getElementById('tblUsersPenggunaBody');
+      dom.adminGuruControls = document.getElementById('adminGuruControls');
+      
+      initFormSubElements();
+    });
+
+    const elemenPersiapan = [
+      { type: 'header', text: 'I. IDENTITAS' },
+      { id: 1, text: 'Menuliskan identitas satuan pendidikan.' },
+      { id: 2, text: 'Menuliskan jenis mata pelajaran.' },
+      { id: 3, text: 'Menuliskan kelas dan semester.' },
+      { id: 4, text: 'Menuliskan materi pokok.' },
+      { id: 5, text: 'Menuliskan alokasi waktu.' },
+      { type: 'sub', text: 'A. IDENTIFIKASI' },
+      { id: 6, text: 'Menuliskan hasil identifikasi kesiapan murid.' },
+      { id: 7, text: 'Menuliskan materi pelajaran dan karakteristiknya.' },
+      { id: 8, text: 'Menuliskan Dimensi Profil Lulusan (DPL) yang difokuskan.' },
+      { type: 'sub', text: 'B. DESAIN PEMBELAJARAN' },
+      { id: 9, text: 'Merumuskan Capaian Pembelajaran (CP) / Tujuan Pembelajaran.' },
+      { id: 10, text: 'Menentukan Lintas Disiplin Ilmu (Interkoneksi mata pelajaran).' },
+      { id: 11, text: 'Memilih Praktik Pedagogis (Kemitraan, Lingkungan, Pemanfaatan Digital).' },
+      { id: 12, text: 'Merancang Pengalaman Belajar (Memahami, Mengaplikasikan, Menganalisis).' },
+      { id: 13, text: 'Merancang Pembuktian Pembelajaran (Asesmen Awal, Formatif, Sumatif).' },
+      { type: 'sub', text: 'C. PENGALAMAN BELAJAR' },
+      { id: 14, text: 'Merancang kegiatan awal/pendahuluan (Apersepsi & Motivasi).' },
+      { id: 15, text: 'Merancang kegiatan inti berbasis Pendekatan Pembelajaran Mendalam (PM).' },
+      { id: 16, text: 'Merancang kegiatan penutup (Refleksi & Rencana Tindak Lanjut).' },
+      { type: 'sub', text: 'D. ASESMEN PEMBELAJARAN' },
+      { id: 17, text: 'Merancang instrumen asesmen diagnosis/awal.' },
+      { id: 18, text: 'Merancang instrumen asesmen formatif (Proses).' },
+      { id: 19, text: 'Merancang instrumen asesmen sumatif (Hasil Belajar).' },
+      { id: 20, text: 'Menyusun rubrik penilaian yang jelas dan terukur.' },
+      { type: 'sub', text: 'E. MEDIA DAN SUMBER BELAJAR' },
+      { id: 21, text: 'Memilih media pembelajaran yang relevan dan interaktif.' },
+      { id: 22, text: 'Memanfaatkan teknologi digital dalam pembelajaran.' },
+      { id: 23, text: 'Menggunakan sumber belajar yang variatif dan otentik.' },
+      { type: 'sub', text: 'F. LAMPIRAN DOKUMEN' },
+      { id: 24, text: 'Melampirkan Lembar Kerja Peserta Didik (LKPD).' },
+      { id: 25, text: 'Melampirkan bahan ajar atau ringkasan materi.' }
+    ];
+
+    const elemenPelaksanaan = [
+      { type: 'header', text: 'I. KEGIATAN PENDAHULUAN' },
+      { id: 1, text: 'Mengkondisikan suasana belajar yang nyaman dan siap belajar.' },
+      { id: 2, text: 'Mendiskusikan kesepakatan kelas bersama siswa.' },
+      { id: 3, text: 'Melakukan apersepsi dan mengaitkan materi dengan kehidupan nyata.' },
+      { id: 4, text: 'Menyampaikan tujuan pembelajaran dan DPL yang dicapai.' },
+      { id: 5, text: 'Melakukan asesmen awal/diagnosis kesiapan siswa.' },
+      { type: 'header', text: 'II. KEGIATAN INTI' },
+      { type: 'sub', text: 'A. Memahami (Acquiring Knowledge)' },
+      { id: 6, text: 'Memfasilitasi siswa memahami konsep dasar secara mendalam.' },
+      { id: 7, text: 'Menggunakan pertanyaan pemantik yang memicu berpikir kritis.' },
+      { id: 8, text: 'Menyajikan materi secara terstruktur, variatif, dan jelas.' },
+      { id: 9, text: 'Mengintegrasikan pilar Pembelajaran Mendalam (PM).' },
+      { type: 'sub', text: 'B. Mengaplikasikan (Applying Knowledge)' },
+      { id: 10, text: 'Mendorong siswa menerapkan konsep dalam pemecahan masalah.' },
+      { id: 11, text: 'Memfasilitasi kerja kelompok/kolaborasi yang efektif.' },
+      { id: 12, text: 'Memberikan bimbingan terintegrasi dan berdeferensiasi.' },
+      { id: 13, text: 'Memanfaatkan media/alat peraga/sumber digital interaktif.' },
+      { type: 'sub', text: 'C. Menganalisis & Merekontruksi (Deepening Knowledge)' },
+      { id: 14, text: 'Mendorong siswa menganalisis, mengevaluasi, dan berkreasi.' },
+      { id: 15, text: 'Memfasilitasi siswa mempresentasikan hasil karya/diskusi.' },
+      { id: 16, text: 'Memberikan umpan balik (feedback) secara konstruktif.' },
+      { id: 17, text: 'Menumbuhkan kepemimpinan dan kemandirian belajar siswa.' },
+      { type: 'sub', text: 'D. Suasana Belajar & Kemitraan' },
+      { id: 18, text: 'Menciptakan lingkungan belajar yang inklusif dan aman.' },
+      { id: 19, text: 'Menunjukkan kesantunan, empati, dan komunikasi efektif.' },
+      { id: 20, text: 'Mendorong apresiasi antar sesama siswa.' },
+      { id: 21, text: 'Mengelola kelas secara kondusif dan disiplin positif.' },
+      { type: 'sub', text: 'E. Pemanfaatan Teknologi & Asesmen Formatif' },
+      { id: 22, text: 'Memanfaatkan teknologi secara tepat guna dan kontekstual.' },
+      { id: 23, text: 'Melaksanakan asesmen formatif saat pembelajaran berlangsung.' },
+      { id: 24, text: 'Mencatat kemajuan dan hambatan belajar siswa.' },
+      { id: 25, text: 'Menyesuaikan kecepatan mengajar sesuai respon murid.' },
+      { type: 'header', text: 'III. KEGIATAN PENUTUP' },
+      { id: 26, text: 'Memfasilitasi siswa merangkum/menyimpulkan materi.' },
+      { id: 27, text: 'Melakukan refleksi bersama murid atas proses pembelajaran.' },
+      { id: 28, text: 'Melakukan asesmen sumatif / penilaian akhir kegiatan.' },
+      { id: 29, text: 'Memberikan umpan balik akhir dan rencana tindak lanjut.' },
+      { id: 30, text: 'Menutup pembelajaran dengan doa dan salam santun.' }
+    ];
+
+    function showLoader() { dom.globalLoader.style.display = 'block'; }
+    function hideLoader() { dom.globalLoader.style.display = 'none'; }
+
+    function handleLogin() {
+      const u = dom.loginUsername.value.trim();
+      const p = dom.loginPassword.value.trim();
+      if (!u || !p) return;
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(res => {
+          hideLoader();
+          if (res.success) {
+            currentUser = res.user;
+            dom.loginAlert.classList.add('d-none');
+            dom.pageLogin.classList.add('d-none');
+            dom.pageMain.classList.remove('d-none');
+            
+            dom.userInfo.innerText = currentUser.nama || currentUser.username;
+            
+            if (currentUser.role === 'supervisor') {
+              if (dom.adminGuruControls) dom.adminGuruControls.style.display = 'none';
+              dom.navSettingsItem.classList.add('d-none');
+              dom.navUsersItem.classList.add('d-none');
+            } else {
+              if (dom.adminGuruControls) dom.adminGuruControls.style.display = 'inline';
+              dom.navSettingsItem.classList.remove('d-none');
+              dom.navUsersItem.classList.remove('d-none');
+            }
+            
+            loadInitialData();
+          } else {
+            dom.loginAlert.innerText = res.message;
+            dom.loginAlert.classList.remove('d-none');
+          }
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message || 'Gagal login!', 'error');
+        })
+        .checkLogin(u, p);
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      dom.loginUsername.value = '';
+      dom.loginPassword.value = '';
+      dom.pageMain.classList.add('d-none');
+      dom.pageLogin.classList.remove('d-none');
+    }
+
+    function loadInitialData() {
+      showLoader();
+      google.script.run
+        .withSuccessHandler(data => {
+          hideLoader();
+          globalSettings = data.settings || {};
+          listSpvData = data.supervisors || [];
+          listGuruData = data.guru || [];
+          rekapKeseluruhanCache = data.rekap || [];
+          listUsersData = data.users || [];
+          
+          updateDashboard();
+          renderTableGuru();
+          renderTableUsers();
+          populateSupervisorDropdown();
+          populateGuruDropdowns();
+          populateSettingsForm();
+          renderRekapHasil();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', 'Gagal memuat data: ' + err.message, 'error');
+        })
+        .getInitialAppData(currentUser);
+    }
+
+    function forceRefreshData() {
+      loadInitialData();
+    }
+
+    function updateDashboard() {
+      dom.dashTotalGuru.innerText = listGuruData.length;
+      let sudah = 0;
+      rekapKeseluruhanCache.forEach(r => {
+        if (r.kategori && r.kategori !== 'Belum Lengkap') sudah++;
+      });
+      dom.dashSudah.innerText = sudah;
+      dom.dashBelum.innerText = listGuruData.length - sudah;
+    }
+
+    function showSection(sectionName) {
+      currentSectionName = sectionName;
+      document.querySelectorAll('.app-section').forEach(el => el.classList.add('d-none'));
+      
+      const targetSec = document.getElementById('sec' + sectionName.charAt(0).toUpperCase() + sectionName.slice(1));
+      if (targetSec) targetSec.classList.remove('d-none');
+      
+      document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+      
+      const classMap = {
+        'dashboard': ['.nav-dash', '.m-dash'],
+        'guru': ['.nav-guru', '.m-guru'],
+        'cetakPersiapan': ['.nav-cp', '.m-cp'],
+        'cetakPelaksanaan': ['.nav-cl', '.m-cl'],
+        'rekapHasil': ['.nav-rh', '.m-rh'],
+        'users': ['.nav-users'],
+        'settings': ['.nav-set']
+      };
+      
+      if (classMap[sectionName]) {
+        classMap[sectionName].forEach(cls => {
+          document.querySelectorAll(cls).forEach(el => el.classList.add('active'));
+        });
+      }
+      if (sectionName === 'cetakPersiapan') renderCetakPersiapan();
+      if (sectionName === 'cetakPelaksanaan') renderCetakPelaksanaan();
+      if (sectionName === 'rekapHasil') renderRekapHasil();
+    }
+
+    // MENU DATA GURU (100% TETAP - POIN 1)
+    function renderTableGuru() {
+      const tbody = dom.tblGuruBody;
+      tbody.innerHTML = '';
+      
+      if (listGuruData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">Belum ada data guru disupervisi.</td></tr>';
+        return;
+      }
+      
+      listGuruData.forEach(g => {
+        const tr = document.createElement('tr');
+        
+        let isP = false, isL = false;
+        const matchRekap = rekapKeseluruhanCache.find(r => r.id === g.id);
+        if (matchRekap) {
+          if (matchRekap.nilaiP && matchRekap.nilaiP !== '-') isP = true;
+          if (matchRekap.nilaiL && matchRekap.nilaiL !== '-') isL = true;
+        }
+        const btnPClass = isP ? 'btn-success' : 'btn-outline-primary';
+        const btnLClass = isL ? 'btn-success' : 'btn-outline-success';
+        
+        let actionsHtml = '';
+        if (currentUser && currentUser.role === 'admin') {
+          actionsHtml = `
+            <div class="d-inline-flex text-nowrap">
+              <button class="btn btn-sm btn-warning me-1" onclick="openModalGuru('${g.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="deleteGuru('${g.id}')"><i class="fas fa-trash"></i></button>
+            </div>
+          `;
+        } else {
+          actionsHtml = '<span class="badge bg-secondary">Akses Terbatas</span>';
+        }
+        
+        tr.innerHTML = `
+          <td class="fw-semibold">${g.nama}</td>
+          <td>${g.nip || '-'}</td>
+          <td>${g.mapel}</td>
+          <td class="text-nowrap-custom">${g.tglSupervisi || '-'}</td>
+          <td>${g.supervisor || '-'}</td>
+          <td class="text-center">
+            <div class="d-inline-flex text-nowrap gap-1">
+              <button class="btn btn-sm ${btnPClass}" onclick="openModalPersiapan('${g.id}', '${g.nama}')"><i class="fas fa-file-alt me-1"></i> Persiapan</button>
+              <button class="btn btn-sm ${btnLClass}" onclick="openModalPelaksanaan('${g.id}', '${g.nama}')"><i class="fas fa-chalkboard me-1"></i> Pelaksanaan</button>
+            </div>
+          </td>
+          <td class="text-center">${actionsHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // REVISI POIN 5: Role Admin juga tampil sebagai pilihan Supervisor di Data Guru
+    function populateSupervisorDropdown() {
+      const sel = document.getElementById('guruSpv');
+      sel.innerHTML = '<option value="">-- Pilih Supervisor / Admin --</option>';
+      listSpvData.forEach(s => {
+        sel.innerHTML += `<option value="${s.nama}" data-nip="${s.nip}">${s.nama}</option>`;
+      });
+    }
+
+    function updateNipSpvAuto() {
+      const sel = document.getElementById('guruSpv');
+      const selectedOption = sel.options[sel.selectedIndex];
+      const nip = selectedOption.getAttribute('data-nip') || '';
+      document.getElementById('guruNipSpv').value = nip;
+    }
+
+    function openModalGuru(idGuru = null) {
+      document.getElementById('formGuru').reset();
+      document.getElementById('guruId').value = '';
+      document.getElementById('modalGuruTitle').innerText = idGuru ? 'Edit Data Guru' : 'Tambah Data Guru';
+      
+      if (idGuru) {
+        const g = listGuruData.find(item => item.id === idGuru);
+        if (g) {
+          document.getElementById('guruId').value = g.id;
+          document.getElementById('guruNama').value = g.nama;
+          document.getElementById('guruNip').value = g.nip;
+          document.getElementById('guruMapel').value = g.mapel;
+          document.getElementById('guruTgl').value = g.tglSupervisi;
+          document.getElementById('guruSpv').value = g.supervisor;
+          document.getElementById('guruNipSpv').value = g.nipSupervisor || '';
+        }
+      }
+      new bootstrap.Modal(document.getElementById('modalGuru')).show();
+    }
+
+    function saveGuru() {
+      const guruData = {
+        id: document.getElementById('guruId').value,
+        nama: document.getElementById('guruNama').value.trim(),
+        nip: document.getElementById('guruNip').value.trim(),
+        mapel: document.getElementById('guruMapel').value.trim(),
+        tglSupervisi: document.getElementById('guruTgl').value,
+        supervisor: document.getElementById('guruSpv').value,
+        nipSupervisor: document.getElementById('guruNipSpv').value
+      };
+      if (!guruData.nama || !guruData.mapel) {
+        Swal.fire('Peringatan', 'Nama Guru dan Mata Pelajaran wajib diisi!', 'warning');
+        return;
+      }
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(res => {
+          hideLoader();
+          bootstrap.Modal.getInstance(document.getElementById('modalGuru')).hide();
+          Swal.fire('Sukses', res.message, 'success');
+          loadInitialData();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .simpanGuru(guruData);
+    }
+
+    function deleteGuru(idGuru) {
+      Swal.fire({
+        title: 'Hapus Data Guru?',
+        text: 'Seluruh nilai persiapan & pelaksanaan guru ini juga akan terhapus!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Ya, Hapus!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          showLoader();
+          google.script.run
+            .withSuccessHandler(res => {
+              hideLoader();
+              Swal.fire('Terhapus', res.message, 'success');
+              loadInitialData();
+            })
+            .withFailureHandler(err => {
+              hideLoader();
+              Swal.fire('Error', err.message, 'error');
+            })
+            .hapusGuru(idGuru);
+        }
+      });
+    }
+
+    function openModalUpload() {
+      document.getElementById('csvFileInput').value = '';
+      new bootstrap.Modal(document.getElementById('modalUpload')).show();
+    }
+
+    function downloadCSVTemplate() {
+      const csvContent = "data:text/csv;charset=utf-8,Nama,NIP,Mata Pelajaran,Tanggal Pelaksanaan\n"
+        + "Ahmad Hidayat,19850101 201001 1 002,Matematika,2026-08-15\n"
+        + "Siti Aminah,19900202 201502 2 003,Bahasa Indonesia,2026-08-16\n";
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "Template_Data_Guru_SADIG.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function processCSVUpload() {
+      const fileInput = document.getElementById('csvFileInput');
+      if (!fileInput.files.length) {
+        Swal.fire('Peringatan', 'Silakan pilih file CSV terlebih dahulu!', 'warning');
+        return;
+      }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const lines = e.target.result.split('\n');
+        const guruArray = [];
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line) {
+            const cols = line.split(',');
+            if (cols.length >= 3) {
+              guruArray.push({
+                nama: cols[0].trim(),
+                nip: cols[1] ? cols[1].trim() : '',
+                mapel: cols[2].trim(),
+                tglSupervisi: cols[3] ? cols[3].trim() : ''
+              });
+            }
+          }
+        }
+        if (guruArray.length > 0) {
+          showLoader();
+          google.script.run
+            .withSuccessHandler(res => {
+              hideLoader();
+              bootstrap.Modal.getInstance(document.getElementById('modalUpload')).hide();
+              Swal.fire('Sukses', res.message, 'success');
+              loadInitialData();
+            })
+            .withFailureHandler(err => {
+              hideLoader();
+              Swal.fire('Error', err.message, 'error');
+            })
+            .uploadBulkGuru(guruArray);
+        } else {
+          Swal.fire('Gagal', 'File CSV kosong atau format tidak sesuai.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // USER PENGGUNA (REVISI POIN 5)
+    function renderTableUsers() {
+      const tbody = dom.tblUsersPenggunaBody;
+      tbody.innerHTML = '';
+      
+      if (listUsersData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">Belum ada akun pengguna/supervisor.</td></tr>';
+        return;
+      }
+      
+      listUsersData.forEach(u => {
+        const tr = document.createElement('tr');
+        
+        let btnActionHtml = '';
+        if (currentUser && currentUser.role === 'admin') {
+          let btnDelete = '';
+          if (u.username !== 'admin') {
+            btnDelete = `<button class="btn btn-sm btn-danger" onclick="deleteUserAkun('${u.username}')"><i class="fas fa-trash me-1"></i>Hapus</button>`;
+          }
+          btnActionHtml = `
+            <div class="d-inline-flex text-nowrap">
+              <button class="btn btn-sm btn-warning me-1" onclick="editUserAkun('${u.username}')"><i class="fas fa-edit me-1"></i>Edit</button>
+              ${btnDelete}
+            </div>
+          `;
+        } else {
+          btnActionHtml = '<span class="badge bg-secondary">Akses Terbatas</span>';
+        }
+        
+        const roleBadge = u.role === 'admin' ? '<span class="badge bg-danger">Administrator</span>' : '<span class="badge bg-primary">Supervisor</span>';
+        
+        tr.innerHTML = `
+          <td class="fw-bold">${u.username}</td>
+          <td><code>${u.password}</code></td>
+          <td class="fw-semibold">${u.nama}</td>
+          <td>${u.nip || '-'}</td>
+          <td class="text-center">${roleBadge}</td>
+          <td class="text-center">${btnActionHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModalUser() {
+      document.getElementById('formUser').reset();
+      document.getElementById('userOldUname').value = '';
+      document.getElementById('modalUserTitle').innerText = 'Tambah User Pengguna / Supervisor';
+      document.getElementById('userInputRole').value = 'supervisor';
+      new bootstrap.Modal(document.getElementById('modalUser')).show();
+    }
+
+    function editUserAkun(uname) {
+      const target = listUsersData.find(x => x.username === uname);
+      if (!target) return;
+      
+      document.getElementById('userOldUname').value = target.username;
+      document.getElementById('userInputUname').value = target.username;
+      document.getElementById('userInputPass').value = target.password;
+      document.getElementById('userInputNama').value = target.nama;
+      document.getElementById('userInputNip').value = target.nip || '';
+      document.getElementById('userInputRole').value = target.role || 'supervisor';
+      document.getElementById('modalUserTitle').innerText = 'Edit User Pengguna: ' + target.username;
+      
+      new bootstrap.Modal(document.getElementById('modalUser')).show();
+    }
+
+    function saveUserAkun() {
+      const oldUname = document.getElementById('userOldUname').value;
+      const uname = document.getElementById('userInputUname').value.trim();
+      const pass = document.getElementById('userInputPass').value.trim();
+      const nama = document.getElementById('userInputNama').value.trim();
+      const nip = document.getElementById('userInputNip').value.trim();
+      const role = 'supervisor'; // Locked default role (Poin 5)
+      
+      if (!uname || !pass || !nama) {
+        Swal.fire('Peringatan', 'Username, Password, dan Nama Lengkap wajib diisi!', 'warning');
+        return;
+      }
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(res => {
+          hideLoader();
+          bootstrap.Modal.getInstance(document.getElementById('modalUser')).hide();
+          Swal.fire('Sukses', res.message, 'success');
+          loadInitialData();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .simpanUserAkun(uname, pass, nama, nip, role, oldUname);
+    }
+
+    function deleteUserAkun(uname) {
+      Swal.fire({
+        title: 'Hapus User Pengguna?',
+        text: `Akun "${uname}" akan dihapus dari sistem!`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Ya, Hapus!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          showLoader();
+          google.script.run
+            .withSuccessHandler(res => {
+              hideLoader();
+              if (res.success) {
+                Swal.fire('Terhapus', res.message, 'success');
+                loadInitialData();
+              } else {
+                Swal.fire('Gagal', res.message, 'error');
+              }
+            })
+            .withFailureHandler(err => {
+              hideLoader();
+              Swal.fire('Error', err.message, 'error');
+            })
+            .hapusUserAkun(uname);
+        }
+      });
+    }
+
+    function populateGuruDropdowns() {
+      const selP = document.getElementById('selGuruPersiapan');
+      const selL = document.getElementById('selGuruPelaksanaan');
+      selP.innerHTML = '<option value="">-- Pilih Guru --</option>';
+      selL.innerHTML = '<option value="">-- Pilih Guru --</option>';
+      
+      listGuruData.forEach(g => {
+        selP.innerHTML += `<option value="${g.id}">${g.nama} (${g.mapel})</option>`;
+        selL.innerHTML += `<option value="${g.id}">${g.nama} (${g.mapel})</option>`;
+      });
+    }
+
+    function initFormSubElements() {
+      const bP = document.getElementById('bodyPersiapan');
+      bP.innerHTML = '';
+      elemenPersiapan.forEach(item => {
+        const tr = document.createElement('tr');
+        if (item.type === 'header') {
+          tr.className = 'table-secondary fw-bold text-uppercase';
+          tr.innerHTML = `<td colspan="3" class="py-2">${item.text}</td>`;
+        } else if (item.type === 'sub') {
+          tr.className = 'table-light fw-bold text-primary';
+          tr.innerHTML = `<td colspan="3" class="ps-3 py-1">${item.text}</td>`;
+        } else {
+          tr.innerHTML = `
+            <td class="text-center font-monospace">${item.id}</td>
+            <td class="ps-3">${item.text}</td>
+            <td class="text-center">
+              <select name="P${item.id}" class="form-select form-select-sm score-input-p" style="width:75px;" required>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+              </select>
+            </td>
+          `;
+        }
+        bP.appendChild(tr);
+      });
+      
+      const bL = document.getElementById('bodyPelaksanaan');
+      bL.innerHTML = '';
+      elemenPelaksanaan.forEach(item => {
+        const tr = document.createElement('tr');
+        if (item.type === 'header') {
+          tr.className = 'table-secondary fw-bold text-uppercase';
+          tr.innerHTML = `<td colspan="3" class="py-2">${item.text}</td>`;
+        } else if (item.type === 'sub') {
+          tr.className = 'table-light fw-bold text-success';
+          tr.innerHTML = `<td colspan="3" class="ps-3 py-1">${item.text}</td>`;
+        } else {
+          tr.innerHTML = `
+            <td class="text-center font-monospace">${item.id}</td>
+            <td class="ps-3">${item.text}</td>
+            <td class="text-center">
+              <select name="L${item.id}" class="form-select form-select-sm score-input-l" style="width:75px;" required>
+                <option value="5">5</option>
+                <option value="4">4</option>
+                <option value="3">3</option>
+                <option value="2">2</option>
+                <option value="1">1</option>
+              </select>
+            </td>
+          `;
+        }
+        bL.appendChild(tr);
+      });
+    }
+
+    function openModalPersiapan(idGuru, namaGuru) {
+      document.getElementById('pGuruId').value = idGuru;
+      document.getElementById('pNamaGuru').innerText = namaGuru;
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(data => {
+          hideLoader();
+          const p = data.persiapan;
+          if (p && p.scores) {
+            for (let j = 1; j <= 25; j++) {
+              const el = document.querySelector(`select[name="P${j}"]`);
+              if (el) el.value = p.scores['P' + j] || 5;
+            }
+            document.getElementById('pMasalah').value = p.masalah || '';
+            document.getElementById('pPemecahan').value = p.pemecahan || '';
+            document.getElementById('pTindakLanjut').value = p.rencanaTL || '';
+          } else {
+            document.querySelectorAll('.score-input-p').forEach(s => s.value = 5);
+            document.getElementById('pMasalah').value = '';
+            document.getElementById('pPemecahan').value = '';
+            document.getElementById('pTindakLanjut').value = '';
+          }
+          new bootstrap.Modal(document.getElementById('modalPersiapan')).show();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .getNilaiGuru(idGuru);
+    }
+
+    function saveNilaiPersiapan() {
+      const idGuru = document.getElementById('pGuruId').value;
+      const scores = {};
+      for (let i = 1; i <= 25; i++) {
+        const el = document.querySelector(`select[name="P${i}"]`);
+        scores['P' + i] = el ? parseInt(el.value) : 0;
+      }
+      const m = document.getElementById('pMasalah').value;
+      const p = document.getElementById('pPemecahan').value;
+      const r = document.getElementById('pTindakLanjut').value;
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(res => {
+          hideLoader();
+          bootstrap.Modal.getInstance(document.getElementById('modalPersiapan')).hide();
+          Swal.fire('Sukses', res.message, 'success');
+          loadInitialData();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .simpanNilaiPersiapan(idGuru, scores, m, p, r);
+    }
+
+    function openModalPelaksanaan(idGuru, namaGuru) {
+      document.getElementById('lGuruId').value = idGuru;
+      document.getElementById('lNamaGuru').innerText = namaGuru;
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(data => {
+          hideLoader();
+          const l = data.pelaksanaan;
+          if (l && l.scores) {
+            for (let j = 1; j <= 30; j++) {
+              const el = document.querySelector(`select[name="L${j}"]`);
+              if (el) el.value = l.scores['L' + j] || 5;
+            }
+            document.getElementById('lMasalah').value = l.masalah || '';
+            document.getElementById('lPemecahan').value = l.pemecahan || '';
+            document.getElementById('lRencanaTL').value = l.rencanaTL || '';
+          } else {
+            document.querySelectorAll('.score-input-l').forEach(s => s.value = 5);
+            document.getElementById('lMasalah').value = '';
+            document.getElementById('lPemecahan').value = '';
+            document.getElementById('lRencanaTL').value = '';
+          }
+          new bootstrap.Modal(document.getElementById('modalPelaksanaan')).show();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .getNilaiGuru(idGuru);
+    }
+
+    function saveNilaiPelaksanaan() {
+      const idGuru = document.getElementById('lGuruId').value;
+      const scores = {};
+      for (let i = 1; i <= 30; i++) {
+        const el = document.querySelector(`select[name="L${i}"]`);
+        scores['L' + i] = el ? parseInt(el.value) : 0;
+      }
+      const m = document.getElementById('lMasalah').value;
+      const p = document.getElementById('lPemecahan').value;
+      const r = document.getElementById('lRencanaTL').value;
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(res => {
+          hideLoader();
+          bootstrap.Modal.getInstance(document.getElementById('modalPelaksanaan')).hide();
+          Swal.fire('Sukses', res.message, 'success');
+          loadInitialData();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .simpanNilaiPelaksanaan(idGuru, scores, m, p, r);
+    }
+
+    function renderCetakPersiapan() {
+      const idGuru = document.getElementById('selGuruPersiapan').value;
+      const tbody = document.getElementById('tblCetakPersiapanBody');
+      tbody.innerHTML = '';
+      
+      if (!idGuru) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-3">Pilih guru terlebih dahulu untuk menampilkan lembar cetak.</td></tr>';
+        return;
+      }
+      
+      const g = listGuruData.find(x => x.id === idGuru);
+      if (!g) return;
+      
+      document.getElementById('cpSekolah').innerText = globalSettings['Nama Sekolah'] || '-';
+      document.getElementById('cpThn').innerText = globalSettings['Tahun Pelajaran'] || '2026/2027';
+      document.getElementById('cpGuru').innerText = g.nama + (g.nip ? ' (NIP. ' + g.nip + ')' : '');
+      document.getElementById('cpMapel').innerText = g.mapel;
+      document.getElementById('cpTgl').innerText = g.tglSupervisi || '-';
+      
+      document.getElementById('cpSpvTTD').innerText = g.supervisor || '-';
+      document.getElementById('cpNipSpvTTD').innerText = g.nipSupervisor ? 'NIP. ' + g.nipSupervisor : 'NIP. -';
+      document.getElementById('cpNamaGuruTTD').innerText = g.nama;
+      document.getElementById('cpNipGuruTTD').innerText = g.nip ? 'NIP. ' + g.nip : 'NIP. -';
+      
+      document.getElementById('cpPengawasTTD').innerText = globalSettings['Pengawas Pembina'] || '-';
+      document.getElementById('cpNipPengawasTTD').innerText = globalSettings['NIP Pengawas Pembina'] ? 'NIP. ' + globalSettings['NIP Pengawas Pembina'] : 'NIP. -';
+      document.getElementById('cpKepsekTTD').innerText = globalSettings['Kepala Sekolah'] || '-';
+      document.getElementById('cpNipKepsekTTD').innerText = globalSettings['NIP Kepala Sekolah'] ? 'NIP. ' + globalSettings['NIP Kepala Sekolah'] : 'NIP. -';
+      document.getElementById('cpTglSuperviseeTTD').innerText = globalSettings['Tempat Tanggal'] || 'Kota Jambi, 12 Agustus 2026';
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(data => {
+          hideLoader();
+          const p = data.persiapan;
+          let totalSkor = 0;
+          
+          elemenPersiapan.forEach(item => {
+            const tr = document.createElement('tr');
+            if (item.type === 'header') {
+              tr.className = 'fw-bold bg-light';
+              tr.innerHTML = `<td colspan="7" class="py-1">${item.text}</td>`;
+            } else if (item.type === 'sub') {
+              tr.className = 'fw-bold text-primary';
+              tr.innerHTML = `<td colspan="7" class="ps-3 py-1">${item.text}</td>`;
+            } else {
+              const val = (p && p.scores) ? (p.scores['P' + item.id] || 0) : 0;
+              totalSkor += parseInt(val);
+              tr.innerHTML = `
+                <td class="text-center">${item.id}</td>
+                <td>${item.text}</td>
+                <td class="text-center fw-bold">${val == 1 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 2 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 3 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 4 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 5 ? '✔' : ''}</td>
+              `;
+            }
+            tbody.appendChild(tr);
+          });
+          
+          if (p) {
+            document.getElementById('cpJumlahSkor').innerText = totalSkor;
+            document.getElementById('cpTotalSkor').innerText = totalSkor;
+            document.getElementById('cpNilaiAkhir').innerText = p.persentase || '0';
+            document.getElementById('cpMasalah').innerText = p.masalah || '-';
+            document.getElementById('cpPemecahan').innerText = p.pemecahan || '-';
+            document.getElementById('cpTindakLanjut').innerText = p.rencanaTL || '-';
+            document.getElementById('cpKategoriBottom').innerText = p.kategori || '-';
+          } else {
+            document.getElementById('cpJumlahSkor').innerText = '0';
+            document.getElementById('cpTotalSkor').innerText = '0';
+            document.getElementById('cpNilaiAkhir').innerText = '0';
+            document.getElementById('cpMasalah').innerText = '-';
+            document.getElementById('cpPemecahan').innerText = '-';
+            document.getElementById('cpTindakLanjut').innerText = '-';
+            document.getElementById('cpKategoriBottom').innerText = 'Belum Ada Nilai';
+          }
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .getNilaiGuru(idGuru);
+    }
+
+    function renderCetakPelaksanaan() {
+      const idGuru = document.getElementById('selGuruPelaksanaan').value;
+      const tbody = document.getElementById('tblCetakPelaksanaanBody');
+      tbody.innerHTML = '';
+      
+      if (!idGuru) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-3">Pilih guru terlebih dahulu untuk menampilkan lembar cetak.</td></tr>';
+        return;
+      }
+      
+      const g = listGuruData.find(x => x.id === idGuru);
+      if (!g) return;
+      
+      document.getElementById('clSekolah').innerText = globalSettings['Nama Sekolah'] || '-';
+      document.getElementById('clThn').innerText = globalSettings['Tahun Pelajaran'] || '2026/2027';
+      document.getElementById('clGuru').innerText = g.nama + (g.nip ? ' (NIP. ' + g.nip + ')' : '');
+      document.getElementById('clMapel').innerText = g.mapel;
+      document.getElementById('clTgl').innerText = g.tglSupervisi || '-';
+      
+      document.getElementById('clSpvTTD').innerText = g.supervisor || '-';
+      document.getElementById('clNipSpvTTD').innerText = g.nipSupervisor ? 'NIP. ' + g.nipSupervisor : 'NIP. -';
+      document.getElementById('clNamaGuruTTD').innerText = g.nama;
+      document.getElementById('clNipGuruTTD').innerText = g.nip ? 'NIP. ' + g.nip : 'NIP. -';
+      
+      document.getElementById('clPengawasTTD').innerText = globalSettings['Pengawas Pembina'] || '-';
+      document.getElementById('clNipPengawasTTD').innerText = globalSettings['NIP Pengawas Pembina'] ? 'NIP. ' + globalSettings['NIP Pengawas Pembina'] : 'NIP. -';
+      document.getElementById('clKepsekTTD').innerText = globalSettings['Kepala Sekolah'] || '-';
+      document.getElementById('clNipKepsekTTD').innerText = globalSettings['NIP Kepala Sekolah'] ? 'NIP. ' + globalSettings['NIP Kepala Sekolah'] : 'NIP. -';
+      document.getElementById('clTglSuperviseeTTD').innerText = globalSettings['Tempat Tanggal'] || 'Kota Jambi, 12 Agustus 2026';
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(data => {
+          hideLoader();
+          const l = data.pelaksanaan;
+          let totalSkor = 0;
+          
+          elemenPelaksanaan.forEach(item => {
+            const tr = document.createElement('tr');
+            if (item.type === 'header') {
+              tr.className = 'fw-bold bg-light';
+              tr.innerHTML = `<td colspan="7" class="py-1">${item.text}</td>`;
+            } else if (item.type === 'sub') {
+              tr.className = 'fw-bold text-success';
+              tr.innerHTML = `<td colspan="7" class="ps-3 py-1">${item.text}</td>`;
+            } else {
+              const val = (l && l.scores) ? (l.scores['L' + item.id] || 0) : 0;
+              totalSkor += parseInt(val);
+              tr.innerHTML = `
+                <td class="text-center">${item.id}</td>
+                <td>${item.text}</td>
+                <td class="text-center fw-bold">${val == 1 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 2 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 3 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 4 ? '✔' : ''}</td>
+                <td class="text-center fw-bold">${val == 5 ? '✔' : ''}</td>
+              `;
+            }
+            tbody.appendChild(tr);
+          });
+          
+          if (l) {
+            document.getElementById('clJumlahSkor').innerText = totalSkor;
+            document.getElementById('clTotalSkor').innerText = totalSkor;
+            document.getElementById('clNilaiAkhir').innerText = l.nilai || '0';
+            document.getElementById('clMasalah').innerText = l.masalah || '-';
+            document.getElementById('clPemecahan').innerText = l.pemecahan || '-';
+            document.getElementById('clRencanaTL').innerText = l.rencanaTL || '-';
+            document.getElementById('clKategoriBottom').innerText = l.kategori || '-';
+          } else {
+            document.getElementById('clJumlahSkor').innerText = '0';
+            document.getElementById('clTotalSkor').innerText = '0';
+            document.getElementById('clNilaiAkhir').innerText = '0';
+            document.getElementById('clMasalah').innerText = '-';
+            document.getElementById('clPemecahan').innerText = '-';
+            document.getElementById('clRencanaTL').innerText = '-';
+            document.getElementById('clKategoriBottom').innerText = 'Belum Ada Nilai';
+          }
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .getNilaiGuru(idGuru);
+    }
+
+    // REKAPITULASI HASIL (100% TETAP - POIN 4)
+    function renderRekapHasil() {
+      document.getElementById('rhSekolah').innerText = globalSettings['Nama Sekolah'] || 'SMP NEGERI 1 WANASABA';
+      document.getElementById('rhThn').innerText = globalSettings['Tahun Pelajaran'] || '2026/2027';
+      document.getElementById('rhPengawas').innerText = globalSettings['Pengawas Pembina'] || '-';
+      document.getElementById('rhNipPengawas').innerText = globalSettings['NIP Pengawas Pembina'] ? 'NIP. ' + globalSettings['NIP Pengawas Pembina'] : 'NIP. -';
+      document.getElementById('rhKepsek').innerText = globalSettings['Kepala Sekolah'] || '-';
+      document.getElementById('rhNipKepsek').innerText = globalSettings['NIP Kepala Sekolah'] ? 'NIP. ' + globalSettings['NIP Kepala Sekolah'] : 'NIP. -';
+      document.getElementById('rhTglTempat').innerText = globalSettings['Tempat Tanggal'] || 'Kota Jambi, 12 Agustus 2026';
+      
+      const tbody = dom.tblRekapHasilBody;
+      tbody.innerHTML = '';
+      
+      if (rekapKeseluruhanCache.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-3">Belum ada rekapitulasi data supervisi.</td></tr>';
+        return;
+      }
+      
+      rekapKeseluruhanCache.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td class="text-start fw-bold">${r.nama}<br><span class="small text-muted font-monospace">${r.nip || 'NIP. -'}</span></td>
+          <td>${r.mapel}</td>
+          <td>${r.totalP || '-'}</td>
+          <td class="fw-bold">${r.nilaiP || '-'}</td>
+          <td>${r.totalL || '-'}</td>
+          <td class="fw-bold">${r.nilaiL || '-'}</td>
+          <td class="fw-bold text-primary fs-6">${r.nilaiRata || '-'}</td>
+          <td><span class="badge bg-info text-dark">${r.kategori}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function populateSettingsForm() {
+      document.getElementById('setNamaSekolah').value = globalSettings['Nama Sekolah'] || '';
+      document.getElementById('setThnPelajaran').value = globalSettings['Tahun Pelajaran'] || '';
+      document.getElementById('setKepsek').value = globalSettings['Kepala Sekolah'] || '';
+      document.getElementById('setNipKepsek').value = globalSettings['NIP Kepala Sekolah'] || '';
+      document.getElementById('setPengawas').value = globalSettings['Pengawas Pembina'] || '';
+      document.getElementById('setNipPengawas').value = globalSettings['NIP Pengawas Pembina'] || '';
+      document.getElementById('setTempatTgl').value = globalSettings['Tempat Tanggal'] || '';
+    }
+
+    function saveSettings() {
+      const data = {
+        'Nama Sekolah': document.getElementById('setNamaSekolah').value.trim(),
+        'Tahun Pelajaran': document.getElementById('setThnPelajaran').value.trim(),
+        'Kepala Sekolah': document.getElementById('setKepsek').value.trim(),
+        'NIP Kepala Sekolah': document.getElementById('setNipKepsek').value.trim(),
+        'Pengawas Pembina': document.getElementById('setPengawas').value.trim(),
+        'NIP Pengawas Pembina': document.getElementById('setNipPengawas').value.trim(),
+        'Tempat Tanggal': document.getElementById('setTempatTgl').value.trim()
+      };
+      
+      showLoader();
+      google.script.run
+        .withSuccessHandler(res => {
+          hideLoader();
+          Swal.fire('Sukses', res.message, 'success');
+          loadInitialData();
+        })
+        .withFailureHandler(err => {
+          hideLoader();
+          Swal.fire('Error', err.message, 'error');
+        })
+        .simpanSettings(data);
+    }
+
+    // REVISI POIN 2: PENAMAAN HASIL DOWNLOAD [NAMA GURU]_NILAI PERSIAPAN
+    function downloadPDFPersiapan() {
+      const idGuru = document.getElementById('selGuruPersiapan').value;
+      if (!idGuru) {
+        Swal.fire('Peringatan', 'Silakan pilih guru terlebih dahulu!', 'warning');
+        return;
+      }
+      const g = listGuruData.find(x => x.id === idGuru);
+      const namaGuru = g ? g.nama : 'Guru';
+      const fileName = `${namaGuru}_nilai persiapan.pdf`;
+      const element = document.getElementById('areaPersiapan');
+      const opt = {
+        margin: 0.3,
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // REVISI POIN 3: PENAMAAN HASIL DOWNLOAD [NAMA GURU]_NILAI PELAKSANAAN
+    function downloadPDFPelaksanaan() {
+      const idGuru = document.getElementById('selGuruPelaksanaan').value;
+      if (!idGuru) {
+        Swal.fire('Peringatan', 'Silakan pilih guru terlebih dahulu!', 'warning');
+        return;
+      }
+      const g = listGuruData.find(x => x.id === idGuru);
+      const namaGuru = g ? g.nama : 'Guru';
+      const fileName = `${namaGuru}_nilai pelaksanaan.pdf`;
+      const element = document.getElementById('areaPelaksanaan');
+      const opt = {
+        margin: 0.3,
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    function downloadPDFRekapHasil() {
+      const element = document.getElementById('areaRekapHasil');
+      const opt = {
+        margin: 0.3,
+        filename: 'Rekapitulasi_Hasil_Supervisi_SADIG.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+  </script>
+</body>
+</html>
